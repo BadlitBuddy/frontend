@@ -20,6 +20,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "daisyui": "^5.6.10",
     "eslint": "^9",
     "eslint-config-next": "16.2.9",
     "postcss": "^8.5.16",
@@ -27,5 +28,6 @@
     "postcss-simple-vars": "^7.0.1",
     "tailwindcss": "^4",
     "typescript": "^5"
-  }
+  },
+  "browserslist": "> 1%"
 }

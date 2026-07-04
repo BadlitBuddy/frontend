@@ -1,27 +1,179 @@
 @import "tailwindcss";
-@plugin "daisyui";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ─────────────────────────────────────────────
+   DaisyUI plugin — built-in themes are kept
+   available alongside the custom wordscribe theme.
+   wordscribe is the default (light) theme.
+───────────────────────────────────────────── */
+@plugin "daisyui" {
+  themes:
+    wordscribe --default,
+    light --default,
+    dark,
+    cupcake,
+    bumblebee,
+    emerald,
+    corporate,
+    synthwave,
+    retro,
+    cyberpunk,
+    valentine,
+    halloween,
+    garden,
+    forest,
+    aqua,
+    lofi,
+    pastel,
+    fantasy,
+    wireframe,
+    black,
+    luxury,
+    dracula,
+    cmyk,
+    autumn,
+    business,
+    acid,
+    lemonade,
+    night,
+    coffee,
+    winter,
+    dim,
+    nord,
+    sunset,
+    caramellatte,
+    abyss,
+    silk;
+  exclude: calendar;
 }
 
+/* ─────────────────────────────────────────────
+   WordScribe custom DaisyUI theme
+───────────────────────────────────────────── */
+@plugin "daisyui/theme" {
+  name: "wordscribe";
+  default: true;
+  prefersdark: false;
+  color-scheme: light;
+
+  --color-base-100: #f8fafc;
+  --color-base-200: #f1f5f9;
+  --color-base-300: #e2e8f0;
+  --color-base-content: #0f172a;
+
+  --color-primary: #0f172a;
+  --color-primary-content: #f8fafc;
+
+  --color-secondary: #475569;
+  --color-secondary-content: #f8fafc;
+
+  --color-accent: #64748b;
+  --color-accent-content: #f8fafc;
+
+  --color-neutral: #475569;
+  --color-neutral-content: #f8fafc;
+
+  --color-info: #0369a1;
+  --color-info-content: #f8fafc;
+
+  --color-success: #15803d;
+  --color-success-content: #f8fafc;
+
+  --color-warning: #ca8a04;
+  --color-warning-content: #0f172a;
+
+  --color-error: #dc2626;
+  --color-error-content: #f8fafc;
+
+  --radius-selector: 0.25rem;
+  --radius-field: 0.25rem;
+  --radius-box: 0.5rem;
+
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+
+  --border: 1px;
+  --depth: 0;
+  --noise: 0;
+}
+
+/* ─────────────────────────────────────────────
+   Tailwind v4 theme tokens
+   Registers the design system as ws-* utilities:
+     bg-ws-background, text-ws-text-primary, etc.
+───────────────────────────────────────────── */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* Fonts */
+  --font-sans:
+    var(--font-hanken-grotesk), "Hanken Grotesk", system-ui, -apple-system,
+    BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono:
+    var(--font-jetbrains-mono), "JetBrains Mono", "Fira Code", "Cascadia Code",
+    ui-monospace, monospace;
+
+  /* Design system semantic color tokens */
+  --color-ws-background: #f8fafc;
+  --color-ws-surface: #ffffff;
+  --color-ws-border: #e2e8f0;
+  --color-ws-text-primary: #0f172a;
+  --color-ws-text-secondary: #475569;
+  --color-ws-text-muted: #64748b;
+  --color-ws-primary: #0f172a;
+  --color-ws-success: #15803d;
+  --color-ws-warning: #ca8a04;
+  --color-ws-error: #dc2626;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* ─────────────────────────────────────────────
+   Base styles
+───────────────────────────────────────────── */
+body {
+  background: var(--color-ws-background);
+  color: var(--color-ws-text-primary);
+  font-family: var(--font-sans);
+}
+
+/* ─────────────────────────────────────────────
+   Custom micro-animations for WordScribe
+───────────────────────────────────────────── */
+@keyframes indeterminate-bar {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(300%);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+.animate-indeterminate-bar {
+  animation: indeterminate-bar 1.5s infinite linear;
+  width: 33.333%;
+}
+
+@keyframes bounce-subtle {
+  0%,
+  100% {
+    transform: translate(-50%, 0);
+  }
+  50% {
+    transform: translate(-50%, -6px);
+  }
+}
+
+.animate-bounce-subtle {
+  animation: bounce-subtle 4s infinite ease-in-out;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }

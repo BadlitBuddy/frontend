@@ -126,6 +126,10 @@
 /* ─────────────────────────────────────────────
    Base styles
 ───────────────────────────────────────────── */
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   background: var(--color-ws-background);
   color: var(--color-ws-text-primary);

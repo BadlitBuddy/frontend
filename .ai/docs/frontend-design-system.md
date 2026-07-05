@@ -60,6 +60,19 @@ The application uses a restrained semantic color system.
 
 ---
 
+## Icons
+
+- use lucide react for the icons, import them the the suffix \*Icon, instead of using the shorthand. for example use `BadgeCheckIcon` instead of `BadgeCheckIcon`,`EarthIcon` Instead Of `Earth`
+
+```ts
+import {
+  BadgeCheckIcon,
+  EarthIcon,
+  HatGlassesIcon,
+  ZapIcon,
+} from "lucide-react";
+```
+
 ## Typography
 
 ### Primary Font

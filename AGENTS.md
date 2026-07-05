@@ -34,8 +34,10 @@ All project-specific docs and skills live in the `.ai/` directory at the project
 ├── docs/
 │   └── frontend-design-system.md   ← Design system: colors, typography, spacing, component rules
 └── skills/
-    └── daisyui/
+    ├── daisyui/
         └── SKILL.md                ← DaisyUI 5 skill (with sub-guides for install, usage, config, colors, components)
+    └── mantinev9/
+        └── SKILL.md                ← Mantine v9 skill (with sub-guides for theme-core, color-system, typography, components)
 ```
 
 ---
@@ -55,6 +57,14 @@ This document defines the canonical:
 - Spacing: Use Mantine's scale (`xs`, `sm`, `md`, `lg`, `xl`)
 - Visual philosophy: clean, calm, distraction-free — the transcript is the primary interface
 
+### Mantine v9 Skill
+
+**When:** Working on the **authenticated application** (anything under the app surface).
+
+**Read:** [`.ai/skills/mantinev9/SKILL.md`](./.ai/skills/mantinev9/SKILL.md)
+
+Then follow its mandatory reference table to read sub-guides as needed (theme, color system, typography, components).
+
 ### DaisyUI Skill
 
 **When:** Working on **marketing pages only** (anything under the public/marketing surface).
@@ -69,5 +79,5 @@ Then follow its mandatory reference table to read sub-guides as needed (usage, c
 
 ### Component Framework
 
-- **Authenticated app:** Use **Mantine UI** components. Customize via the shared Mantine theme. Extend existing components rather than recreating them.
+- **Authenticated app:** Use **Mantine UI** components. Customize via the shared Mantine theme. Extend existing components rather than recreating them. Refer to [`.ai/skills/mantinev9/SKILL.md`](./.ai/skills/mantinev9/SKILL.md) for usage details.
 - **Marketing pages:** Use **DaisyUI** on top of Tailwind CSS 4. Refer to `.ai/skills/daisyui/` for correct class names.

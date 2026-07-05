@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "create-feature": "tsx scripts/create-feature.ts"
   },
   "dependencies": {
     "@mantine/core": "^9.4.1",

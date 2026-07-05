@@ -34,6 +34,10 @@ Mantine v9 is a fully featured React component library. It provides customizable
 - [Typography](./theme/typography.md)
 - [Component Defaults](./theme/component-defaults.md)
 
+## List of components
+
+For a complete list of available components and implementation details, refer to the relevant component [SKILL.md](./components/SKILL.md) files.
+
 ### Component discovery protocol
 
 Before writing any Mantine code, do this in order:

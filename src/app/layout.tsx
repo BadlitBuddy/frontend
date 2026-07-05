@@ -1,12 +1,6 @@
 import type { Metadata } from "next";
 import { Hanken_Grotesk, JetBrains_Mono } from "next/font/google";
-import "@mantine/core/styles.css";
 import "./globals.css";
-import {
-  ColorSchemeScript,
-  MantineProvider,
-  mantineHtmlProps,
-} from "@mantine/core";
 
 const hankenGrotesk = Hanken_Grotesk({
   variable: "--font-hanken-grotesk",
@@ -33,14 +27,8 @@ export default function RootLayout({
     <html
       lang="en"
       className={`${hankenGrotesk.variable} ${jetBrainsMono.variable} h-full antialiased`}
-      {...mantineHtmlProps}
     >
-      <head>
-        <ColorSchemeScript defaultColorScheme="auto" />
-      </head>
-      <body className="min-h-full flex flex-col">
-        <MantineProvider defaultColorScheme="auto">{children}</MantineProvider>
-      </body>
+      <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );
 }

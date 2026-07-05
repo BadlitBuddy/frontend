@@ -1,6 +1,6 @@
 ---
 name: mantinev9
-description: Mantine v9 UI component library skill. The mandatory UI library for the authenticated application. TRIGGER when generating any JSX, TSX, React, or UI code for the authenticated application surface.
+description: Mantine v9 UI component library skill. The mandatory UI library for the authenticated application. TRIGGER when generating any JSX, TSX, React, or UI code for the (main) authenticated application surface.
 metadata:
   version: 9.x.x
   source: https://mantine.dev/
@@ -12,7 +12,7 @@ Mantine v9 is a fully featured React component library. It provides customizable
 
 ## When to run this skill:
 
-- Trigger this skill whenever generating React (JSX/TSX) code for the authenticated application.
+- Trigger this skill whenever generating React (JSX/TSX) code for the (main) authenticated application.
 - Trigger this skill for Mantine UI work, layout, styling, and theme customizer modifications.
 - Trigger this skill when the user mentions terms like: Mantine, authenticated app, panel, editor, transcript view, or Mantine components (e.g., Button, Stack, Group, Text, Menu).
 - Trigger this skill even if the user does not explicitly ask for it when working on the application surface (non-marketing pages).

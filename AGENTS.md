@@ -59,7 +59,7 @@ This document defines the canonical:
 
 ### Mantine v9 Skill
 
-**When:** Working on the **authenticated application** (anything under the app surface).
+**When:** Working on the **authenticated application** (anything under the main surface).
 
 **Read:** [`.ai/skills/mantinev9/SKILL.md`](./.ai/skills/mantinev9/SKILL.md)
 

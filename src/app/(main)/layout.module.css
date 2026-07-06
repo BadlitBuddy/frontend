@@ -1,0 +1,21 @@
+.signOutButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 7px 10px;
+  border-radius: var(--mantine-radius-sm);
+  border: 1px solid var(--mantine-color-slate-2);
+  color: var(--mantine-color-slate-5);
+  font-size: 0.8rem;
+  font-weight: 500;
+  background-color: transparent;
+  transition:
+    background-color 120ms ease,
+    color 120ms ease;
+}
+
+.signOutButton:hover {
+  background-color: var(--mantine-color-slate-0);
+  color: var(--mantine-color-slate-8);
+}

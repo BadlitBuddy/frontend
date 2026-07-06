@@ -164,3 +164,13 @@ body {
 6. **Respect import order**: `@mantine/core` styles → other `@mantine/*` package styles → your app's own CSS module imports. If you can't guarantee order (e.g. some Next.js setups), use the `.layer.css` variants instead of the plain `.css` ones — never mix both for the same package.
 7. **When importing per-component styles**, always include the three global files (`baseline.css`, `default-css-variables.css`, `global.css`) first, and import any dependency components' CSS before the CSS of components built on top of them.
 8. **Don't fight the global reset/body styles** by overriding them directly — adjust the theme (colors, fonts, spacing) via `MantineProvider` instead, so changes stay consistent everywhere.
+
+## 6. Hierarchy of how to implement styles the mantine way
+
+- ✅ Component props (color, variant, size, radius)
+- ✅ CSS Modules (\*.module.css)
+- ✅ classNames for styling internal elements
+- ✅ Theme CSS variables
+- ⚠️ Style props (mt, px, maw) for simple layout tweaks
+- ⚠️ style for one-off dynamic values
+- ⚠️ styles only when inline dynamic styling is truly necessary

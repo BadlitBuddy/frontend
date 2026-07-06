@@ -26,7 +26,8 @@ Mantine v9 is a fully featured React component library. It provides customizable
 | Designing Color System        | [./theme/color-system.md](./theme/color-system.md)                           | MANDATORY. Underpinning of the grayscale and status color system.                  |
 | Configuring Typography        | [./theme/typography.md](./theme/typography.md)                               | Use for font scaling, custom family configuration, and headings.                   |
 | Overriding Component Defaults | [./theme/component-defaults.md](./theme/component-defaults.md)               | MANDATORY. Read before custom component override definitions via theme components. |
-| Mantine Colors                | [./colors](./colors/SKILL.md)                                                | User when deling with styling the components                                       |
+| Mantine Colors                | [./colors](./colors/SKILL.md)                                                | Use when dealing with color customization                                          |
+| Mantine Component Styling     | [./styling](./styling/SKILL.md)                                              | MANDATORY. Use when dealing with styling the components                            |
 
 ## Theme Configuration Guides
 

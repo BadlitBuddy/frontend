@@ -1,0 +1,9 @@
+.tableHeader {
+  border-bottom: 1px solid var(--mantine-color-slate-2);
+  color: var(--mantine-color-slate-4);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding-block: 0.75rem;
+}

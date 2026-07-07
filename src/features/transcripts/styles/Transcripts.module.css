@@ -1,0 +1,108 @@
+.cellCheckbox {
+  input {
+    cursor: pointer;
+
+    &:checked {
+      background-color: var(--mantine-color-slate-9);
+      border-color: var(--mantine-color-slate-9);
+    }
+  }
+}
+
+.tableHeader {
+  border-bottom: 1px solid var(--mantine-color-slate-2);
+  color: var(--mantine-color-slate-4);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding-block: 0.75rem;
+}
+
+.tableCard {
+  border: 1px solid var(--mantine-color-slate-2);
+  border-radius: var(--mantine-radius-md);
+  overflow: hidden;
+  background-color: var(--mantine-color-slate-0);
+}
+
+.filterButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  height: 36px;
+  padding: 0 12px;
+  border-radius: var(--mantine-radius-sm);
+  border: 1px solid var(--mantine-color-slate-2);
+  background-color: #ffffff;
+  color: var(--mantine-color-slate-7);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    border-color 100ms ease,
+    background-color 100ms ease;
+  min-width: 120px;
+}
+
+.filterButton:hover {
+  border-color: var(--mantine-color-slate-4);
+  background-color: var(--mantine-color-slate-0);
+}
+
+.durationPill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 28px;
+  padding: 0 12px;
+  border-radius: 9999px;
+  border: 1px solid var(--mantine-color-slate-2);
+  background-color: #ffffff;
+  color: var(--mantine-color-slate-6);
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 120ms ease;
+}
+
+.durationPill:hover {
+  background-color: var(--mantine-color-slate-0);
+  color: var(--mantine-color-slate-8);
+  border-color: var(--mantine-color-slate-3);
+}
+
+.durationPillActive {
+  background-color: var(--mantine-color-slate-9);
+  color: var(--mantine-color-slate-0);
+  border-color: var(--mantine-color-slate-9);
+}
+
+.control {
+  border: none;
+  border-radius: 50%;
+  width: 26px;
+  height: 26px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--mantine-color-slate-5);
+  background-color: transparent;
+  transition:
+    background-color 100ms ease,
+    color 100ms ease;
+}
+
+.control:hover {
+  background-color: var(--mantine-color-slate-1);
+  color: var(--mantine-color-slate-9);
+}
+
+.control[data-active] {
+  background-color: var(--mantine-color-slate-9);
+  color: var(--mantine-color-slate-0);
+}
+
+.control[data-active]:hover {
+  background-color: var(--mantine-color-slate-9);
+}

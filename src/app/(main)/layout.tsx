@@ -198,7 +198,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </AppShell.Navbar>
 
         <AppShell.Main bg="slate.0">
-          <Box maw={880} mx="auto">
+          <Box maw={1024} mx="auto">
             {children}
           </Box>
         </AppShell.Main>

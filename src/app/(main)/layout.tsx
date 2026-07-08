@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import "@mantine/core/styles.css";
+import '@gfazioli/mantine-audio/styles.css';
 import {
   AppShell,
   Anchor,
@@ -197,11 +198,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           </AppShell.Section>
         </AppShell.Navbar>
 
-        <AppShell.Main bg="slate.0">
-          <Box maw={1024} mx="auto">
-            {children}
-          </Box>
-        </AppShell.Main>
+        <AppShell.Main bg="slate.0">{children}</AppShell.Main>
       </AppShell>
     </MantineProvider>
   );

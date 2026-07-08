@@ -6,6 +6,7 @@ import { TranscriptsFilters } from "@/features/transcripts/components/Transcript
 import { TranscriptsTable } from "@/features/transcripts/components/TranscriptsTable";
 import { MOCK_TRANSCRIPTS } from "@/features/transcripts/data/mockTranscripts";
 import { DurationFilter, Transcript } from "@/features/transcripts/types";
+import { MainPageContainer } from "../_components/MainPageContainer";
 
 // Helper to parse duration (MM:SS or HH:MM:SS) to seconds
 function parseDurationToSeconds(duration: string): number {
@@ -182,48 +183,50 @@ export default function TranscriptsPage() {
   };
 
   return (
-    <Stack gap="xl">
-      <Box>
-        <Title
-          order={1}
-          fz="1.875rem"
-          c="slate.9"
-          fw="800"
-          style={{
-            lineHeight: 1.2,
-          }}
-        >
-          Transcripts
-        </Title>
-        <Text size="sm" mt={4} c="slate.5">
-          Your transcripts log.
-        </Text>
-      </Box>
+    <MainPageContainer>
+      <Stack gap="xl">
+        <Box>
+          <Title
+            order={1}
+            fz="1.875rem"
+            c="slate.9"
+            fw="800"
+            style={{
+              lineHeight: 1.2,
+            }}
+          >
+            Transcripts
+          </Title>
+          <Text size="sm" mt={4} c="slate.5">
+            Your transcripts log.
+          </Text>
+        </Box>
 
-      <TranscriptsFilters
-        searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
-        dateRange={dateRange}
-        onDateRangeChange={setDateRange}
-        status={status}
-        onStatusChange={setStatus}
-        duration={duration}
-        onDurationChange={setDuration}
-      />
+        <TranscriptsFilters
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          dateRange={dateRange}
+          onDateRangeChange={setDateRange}
+          status={status}
+          onStatusChange={setStatus}
+          duration={duration}
+          onDurationChange={setDuration}
+        />
 
-      <TranscriptsTable
-        transcripts={paginatedTranscripts}
-        selectedIds={validSelectedIds}
-        onToggleSelect={handleToggleSelect}
-        onToggleSelectAll={handleToggleSelectAll}
-        onDownloadSelected={handleDownloadSelected}
-        onDeleteSelected={handleDeleteSelected}
-        onClearSelection={handleClearSelection}
-        currentPage={currentPage}
-        onPageChange={setCurrentPage}
-        totalCount={filteredTranscripts.length}
-        pageSize={pageSize}
-      />
-    </Stack>
+        <TranscriptsTable
+          transcripts={paginatedTranscripts}
+          selectedIds={validSelectedIds}
+          onToggleSelect={handleToggleSelect}
+          onToggleSelectAll={handleToggleSelectAll}
+          onDownloadSelected={handleDownloadSelected}
+          onDeleteSelected={handleDeleteSelected}
+          onClearSelection={handleClearSelection}
+          currentPage={currentPage}
+          onPageChange={setCurrentPage}
+          totalCount={filteredTranscripts.length}
+          pageSize={pageSize}
+        />
+      </Stack>
+    </MainPageContainer>
   );
 }

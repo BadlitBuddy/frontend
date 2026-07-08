@@ -10,8 +10,10 @@
     "create-feature": "tsx scripts/create-feature.ts"
   },
   "dependencies": {
+    "@gfazioli/mantine-audio": "^1.0.4",
     "@mantine/core": "^9.4.1",
     "@mantine/hooks": "^9.4.1",
+    "@tabler/icons-react": "^3.44.0",
     "lucide-react": "^1.23.0",
     "next": "16.2.9",
     "react": "19.2.4",

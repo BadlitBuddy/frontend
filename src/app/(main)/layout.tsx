@@ -197,11 +197,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           </AppShell.Section>
         </AppShell.Navbar>
 
-        <AppShell.Main bg="slate.0">
-          <Box maw={1024} mx="auto">
-            {children}
-          </Box>
-        </AppShell.Main>
+        <AppShell.Main bg="slate.0">{children}</AppShell.Main>
       </AppShell>
     </MantineProvider>
   );

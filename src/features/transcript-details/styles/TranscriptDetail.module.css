@@ -1,0 +1,135 @@
+/* ===== Layout ===== */
+.layout {
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: 24px;
+  align-items: start;
+}
+
+/* ===== Transcript Panel ===== */
+.searchInput {
+  margin-bottom: 20px;
+}
+
+.segment {
+  padding: 12px 0 12px 16px;
+  border-left: 2px solid transparent;
+  cursor: pointer;
+  transition: border-color 80ms ease;
+  margin-bottom: 4px;
+}
+
+.segment:hover {
+  border-left-color: var(--mantine-color-slate-3);
+}
+
+.segmentActive {
+  border-left-color: var(--mantine-color-slate-9);
+  background-color: var(--mantine-color-slate-0);
+  border-radius: 0 var(--mantine-radius-sm) var(--mantine-radius-sm) 0;
+}
+
+.segmentActive:hover {
+  border-left-color: var(--mantine-color-slate-9);
+}
+
+.highlight {
+  background-color: #c7d2e8;
+  border-radius: 2px;
+  padding: 0 2px;
+}
+
+/* ===== Sidebar ===== */
+.sidebarCard {
+  border: 1px solid var(--mantine-color-slate-2);
+  border-radius: var(--mantine-radius-md);
+  background-color: #ffffff;
+  overflow: hidden;
+}
+
+.sidebarCardHeader {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--mantine-color-slate-1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sidebarCardBody {
+  padding: 14px;
+}
+
+.metaLabel {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--mantine-color-slate-4);
+  margin-bottom: 2px;
+}
+
+.metaValue {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--mantine-color-slate-8);
+}
+
+.metaRow {
+  padding: 8px 0;
+}
+
+.metaRow + .metaRow {
+  border-top: 1px solid var(--mantine-color-slate-1);
+}
+
+.insightsSkeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.skeletonLine {
+  height: 8px;
+  border-radius: 4px;
+  background-color: var(--mantine-color-slate-1);
+}
+
+.analysisPanelButton {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid var(--mantine-color-slate-2);
+  border-radius: var(--mantine-radius-md);
+  background: #ffffff;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 700;
+  font-family: var(--font-jetbrains-mono), monospace;
+  color: var(--mantine-color-slate-7);
+  letter-spacing: 0.04em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition:
+    background-color 100ms ease,
+    border-color 100ms ease,
+    color 100ms ease;
+}
+
+.analysisPanelButton:hover {
+  background-color: var(--mantine-color-slate-0);
+  border-color: var(--mantine-color-slate-3);
+  color: var(--mantine-color-slate-9);
+}
+
+.button {
+  color: var(--mantine-color-slate-5);
+  font-size: 0.75rem;
+  font-weight: 700;
+  transition: color 100ms ease;
+}
+
+.button:hover {
+  color: var(--mantine-color-slate-9);
+}

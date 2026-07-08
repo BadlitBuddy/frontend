@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import "@mantine/core/styles.css";
+import '@gfazioli/mantine-audio/styles.css';
 import {
   AppShell,
   Anchor,

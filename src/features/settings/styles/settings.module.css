@@ -1,0 +1,11 @@
+.inlineLink {
+  font-weight: 500;
+  font-size: var(--mantine-font-size-sm);
+  color: var(--mantine-color-slate-5);
+  transition: color 120ms ease;
+}
+
+.inlineLink:hover {
+  color: var(--mantine-color-slate-8);
+  background: none;
+}

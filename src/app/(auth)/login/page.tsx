@@ -4,6 +4,10 @@ import GoogleChromeIcon from "@/components/icons/GoogleChromeIcon";
 import Link from "next/link";
 
 export default function LoginPage() {
+  const handleGoogleLogin = () => {
+    window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/users/login`;
+  };
+
   return (
     <div className="flex flex-col items-center justify-center text-center">
       <div className="mb-10">
@@ -16,20 +20,13 @@ export default function LoginPage() {
       </div>
 
       <div className="w-full space-y-4">
-        {/* //TODO: implement Google SSO button */}
         <button
-          onClick={() => {
-            window.location.href = "/dashboard";
-          }}
+          onClick={handleGoogleLogin}
           className="btn btn-neutral w-full normal-case text-base font-semibold py-3 px-4 rounded-xl flex items-center justify-center gap-3 border border-base-300 shadow-md hover:bg-neutral-800 transition-all duration-200"
         >
           <GoogleChromeIcon size={20} />
           Continue with Google
         </button>
-
-        <p className="text-xs text-base-content/40 mt-3">
-          Secure SSO only. No password needed.
-        </p>
       </div>
 
       <div className="mt-12 text-sm text-base-content/60">

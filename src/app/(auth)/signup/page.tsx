@@ -1,41 +1,36 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
-import { CheckIcon, CircleAlertIcon } from "lucide-react";
+import { Suspense, useState } from "react";
+import { CheckIcon } from "lucide-react";
 import GoogleChromeIcon from "@/components/icons/GoogleChromeIcon";
+import { useNotifications } from "@/components/notifications/notifications-store";
+import AuthSearchParamsHandler from "../_components/AuthSearchParamsHandler";
 
 export default function SignupPage() {
   const [agreed, setAgreed] = useState(false);
-  const [showToast, setShowToast] = useState(false);
+
+  const { addNotification } = useNotifications();
 
   const handleGoogleSignup = () => {
     if (!agreed) {
-      setShowToast(true);
-
-      setTimeout(() => {
-        setShowToast(false);
-      }, 2000);
-
+      addNotification({
+        type: "error",
+        title: "Terms not accepted",
+        message:
+          "Please agree to the terms and conditions before creating an account.",
+      });
       return;
     }
 
-    window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/users/register?hasAcceptedTerms=${agreed ? "true" : "false"}`;
+    window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/users/signup?hasAcceptedTerms=${agreed ? "true" : "false"}`;
   };
 
   return (
     <div className="flex flex-col items-start text-left w-full">
-      <div
-        className="toast toast-start"
-        style={{ display: showToast ? "block" : "none" }}
-      >
-        <div className="alert alert-error">
-          <CircleAlertIcon />
-          <span>
-            Please agree to the terms and conditions before creating an account.
-          </span>
-        </div>
-      </div>
+      <Suspense fallback={null}>
+        <AuthSearchParamsHandler />
+      </Suspense>
 
       <div className="mb-8">
         <h1 className="text-4xl font-bold tracking-tight text-base-content sm:text-5xl leading-tight">

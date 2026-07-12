@@ -3,6 +3,7 @@
 import Header from "@/features/marketing/components/Header";
 import ProductPreview from "./_components/ProductPreview";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Notifications } from "@/components/notifications/notifications";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -25,6 +26,7 @@ export default function AuthLayout({
         data-theme="wordscribe"
         className="min-h-screen flex flex-col bg-base-100 antialiased font-sans select-none"
       >
+        <Notifications />
         <Header />
         <main className="grow grid grid-cols-1 lg:grid-cols-2">
           <div className="flex flex-col justify-center items-center px-6 py-12 md:px-12 bg-base-100">

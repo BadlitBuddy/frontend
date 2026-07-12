@@ -2,6 +2,8 @@
 
 import GoogleChromeIcon from "@/components/icons/GoogleChromeIcon";
 import Link from "next/link";
+import { Suspense } from "react";
+import AuthSearchParamsHandler from "../_components/AuthSearchParamsHandler";
 
 export default function LoginPage() {
   const handleGoogleLogin = () => {
@@ -10,6 +12,10 @@ export default function LoginPage() {
 
   return (
     <div className="flex flex-col items-center justify-center text-center">
+      <Suspense fallback={null}>
+        <AuthSearchParamsHandler />
+      </Suspense>
+
       <div className="mb-10">
         <h1 className="text-4xl font-bold tracking-tight text-base-content sm:text-5xl">
           Welcome back

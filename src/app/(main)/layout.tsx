@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import "@mantine/core/styles.css";
-import '@gfazioli/mantine-audio/styles.css';
+import "@gfazioli/mantine-audio/styles.css";
 import {
   AppShell,
   Anchor,
@@ -25,6 +25,18 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import classes from "./layout.module.css";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ProtectedRoute, useUser, useLogout } from "@/lib/auth";
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      retry: false,
+      staleTime: 1000 * 60,
+    },
+  },
+});
 
 const NAV_LINKS = [
   { href: "/dashboard", label: "Dashboard", Icon: LayoutDashboardIcon },
@@ -87,8 +99,21 @@ function NavItem({
   );
 }
 
-export default function AppLayout({ children }: { children: React.ReactNode }) {
+function InnerAppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const { data: user } = useUser();
+  const logoutMutation = useLogout();
+
+  const userInitials = user
+    ? `${user.firstName?.[0] || ""}${user.lastName?.[0] || ""}`.toUpperCase() ||
+      "U"
+    : "U";
+
+  const fullName = user ? `${user.firstName} ${user.lastName}`.trim() : "User";
+
+  const handleLogout = () => {
+    logoutMutation.mutate();
+  };
 
   return (
     <MantineProvider theme={wordscribeTheme} defaultColorScheme="light">
@@ -136,7 +161,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           <AppShell.Section grow p="sm">
             <Stack gap={2} mt="sm">
               {NAV_LINKS.map(({ href, label, Icon }) => (
-                // TODO: component
                 <NavItem
                   key={href}
                   href={href}
@@ -162,8 +186,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                   color: "#fff",
                 }}
               >
-                {/* //TODO: Replace with actual user initial */}
-                JD
+                {userInitials}
               </Avatar>
               <Box style={{ flex: 1, overflow: "hidden" }}>
                 <Text
@@ -172,28 +195,25 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                   style={{ color: "var(--mantine-color-slate-9)" }}
                   truncate
                 >
-                  {/* //TODO: Replace with actual user name */}
-                  John Doe
+                  {fullName}
                 </Text>
                 <Text
                   size="xs"
                   style={{ color: "var(--mantine-color-slate-4)" }}
                   truncate
                 >
-                  {/* //TODO: Replace with actual user email */}
-                  john@example.com
+                  {user?.email || ""}
                 </Text>
               </Box>
             </Group>
 
-            {/* // TODO: Implement sign out functionality */}
             <UnstyledButton
-              component={Link}
-              href="/"
+              onClick={handleLogout}
               className={classes.signOutButton}
+              disabled={logoutMutation.isPending}
             >
               <LogOutIcon size={14} />
-              Sign Out
+              {logoutMutation.isPending ? "Signing Out..." : "Sign Out"}
             </UnstyledButton>
           </AppShell.Section>
         </AppShell.Navbar>
@@ -201,5 +221,15 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <AppShell.Main bg="slate.0">{children}</AppShell.Main>
       </AppShell>
     </MantineProvider>
+  );
+}
+
+export default function AppLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <ProtectedRoute>
+        <InnerAppLayout>{children}</InnerAppLayout>
+      </ProtectedRoute>
+    </QueryClientProvider>
   );
 }

@@ -4,9 +4,45 @@ import { useState, type DragEvent } from "react";
 import { Box, Button, FileButton, Stack, Text, Title } from "@mantine/core";
 import { UploadIcon } from "lucide-react";
 import classes from "../styles/WorkspaceUploader.module.css";
+import { useUploadFile } from "../api/upload-file";
+import { useNotifications } from "@/components/notifications/notifications-store";
+
+const ACCEPTED_MIME_TYPES = [
+  "audio/*",
+  "video/*",
+  "audio/wav",
+  "audio/webm",
+  "audio/flac",
+  "audio/mpeg",
+  "audio/mp4",
+  "audio/x-m4a",
+  "audio/ogg",
+  "video/webm",
+  "video/mp4",
+];
 
 export function WorkspaceUploader() {
   const [isDragging, setIsDragging] = useState(false);
+  const { addNotification } = useNotifications();
+  const [fileName, setFileName] = useState<string | null>(null);
+
+  const uploadFileMutation = useUploadFile({
+    mutationConfig: {
+      onSuccess: (data) => {
+        addNotification({
+          type: "success",
+          title: "File uploaded successfully",
+          message: `Transcription has been initiated for ${fileName}.`,
+        });
+      },
+    },
+  });
+
+  const handleFileUpload = (file: File) => {
+    const fileName = file.name;
+    setFileName(fileName);
+    uploadFileMutation.mutate({ data: { fileName } });
+  };
 
   const handleDragOver = (e: DragEvent) => {
     e.preventDefault();
@@ -18,12 +54,15 @@ export function WorkspaceUploader() {
   const handleDrop = (e: DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
-    // TODO: handle dropped files
+    const file = e.dataTransfer.files[0];
+    if (!file) return;
+
+    handleFileUpload(file);
   };
 
   const handleFileSelect = (file: File | null) => {
     if (!file) return;
-    // TODO: handle selected file
+    handleFileUpload(file);
   };
 
   return (
@@ -62,7 +101,7 @@ export function WorkspaceUploader() {
 
         <FileButton
           onChange={handleFileSelect}
-          accept="audio/*,video/*,.wav,.webm,.flac,.mp3,.mpeg,.mpga,.mp4,.m4a,.ogg"
+          accept={ACCEPTED_MIME_TYPES.join(",")}
         >
           {(props) => (
             <Button

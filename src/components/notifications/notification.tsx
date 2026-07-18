@@ -43,7 +43,7 @@ export const Notification = ({
   }, [duration, id, onDismiss]);
 
   return (
-    <div className="toast toast-start">
+    <div className="toast toast-start z-999">
       <div className={cn("alert", `alert-${type}`)}>
         <div className="shrink-0">{icons[type]}</div>
         <div>

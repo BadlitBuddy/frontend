@@ -15,6 +15,8 @@ import classes from "../styles/WorkspaceUploader.module.css";
 import { useUploadFile } from "../api/upload-file";
 import { useNotifications } from "@/components/notifications/notifications-store";
 import { useUploadFileToPresignedUrl } from "../api/upload-to-s3";
+import { useUpdateFileStatus } from "../api/update-file-status";
+import { TranscriptionJobStatus } from "../types";
 
 const ACCEPTED_MIME_TYPES = [
   "audio/*",
@@ -33,6 +35,11 @@ const ACCEPTED_MIME_TYPES = [
 export function WorkspaceUploader() {
   const { addNotification } = useNotifications();
   const [pendingFile, setPendingFile] = useState<File | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  const updateFileStatusMutation = useUpdateFileStatus({
+    mutationConfig: {},
+  });
 
   const uploadToPresignedUrlMutation = useUploadFileToPresignedUrl({
     mutationConfig: {
@@ -64,6 +71,16 @@ export function WorkspaceUploader() {
           presignedUrl: data.url,
           file: pendingFile,
         });
+
+        updateFileStatusMutation.mutate({
+          unProcessedObjectKey: data.objectKey,
+          data: {
+            processedObjectKey: null,
+            transcriptionJobStatus: TranscriptionJobStatus.Uploaded,
+          },
+        });
+
+        setIsProcessing(true);
       },
     },
   });
@@ -85,12 +102,20 @@ export function WorkspaceUploader() {
     );
   }
 
+  if (isProcessing) {
+    return <TranscriptionInProgressView />;
+  }
+
   return (
     <UploaderView
       handleFileUpload={handleFileUpload}
       isUploading={isUploading}
     />
   );
+}
+
+function TranscriptionInProgressView() {
+  return <>processing</>;
 }
 
 type ProgressViewProps = {

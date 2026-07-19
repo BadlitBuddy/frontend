@@ -1,11 +1,20 @@
 "use client";
 
 import { useState, type DragEvent } from "react";
-import { Box, Button, FileButton, Stack, Text, Title } from "@mantine/core";
+import {
+  Box,
+  Button,
+  FileButton,
+  Progress,
+  Stack,
+  Text,
+  Title,
+} from "@mantine/core";
 import { UploadIcon } from "lucide-react";
 import classes from "../styles/WorkspaceUploader.module.css";
 import { useUploadFile } from "../api/upload-file";
 import { useNotifications } from "@/components/notifications/notifications-store";
+import { useUploadFileToPresignedUrl } from "../api/upload-to-s3";
 
 const ACCEPTED_MIME_TYPES = [
   "audio/*",
@@ -22,36 +31,127 @@ const ACCEPTED_MIME_TYPES = [
 ];
 
 export function WorkspaceUploader() {
-  const [isDragging, setIsDragging] = useState(false);
   const { addNotification } = useNotifications();
-  const [fileName, setFileName] = useState<string | null>(null);
+  const [pendingFile, setPendingFile] = useState<File | null>(null);
+
+  const uploadToPresignedUrlMutation = useUploadFileToPresignedUrl({
+    mutationConfig: {
+      onSuccess: () => {
+        addNotification({
+          type: "success",
+          title: "File uploaded successfully",
+          message: `Transcription has been initiated for ${pendingFile?.name}.`,
+        });
+        setPendingFile(null);
+      },
+      onError: () => {
+        addNotification({
+          type: "error",
+          title: "Upload failed",
+          message: `Could not upload ${pendingFile?.name}.`,
+        });
+        setPendingFile(null);
+      },
+    },
+  });
 
   const uploadFileMutation = useUploadFile({
     mutationConfig: {
       onSuccess: (data) => {
-        addNotification({
-          type: "success",
-          title: "File uploaded successfully",
-          message: `Transcription has been initiated for ${fileName}.`,
+        if (!pendingFile) return;
+
+        uploadToPresignedUrlMutation.mutate({
+          presignedUrl: data.url,
+          file: pendingFile,
         });
       },
     },
   });
 
-  const handleFileUpload = (file: File) => {
-    const fileName = file.name;
-    setFileName(fileName);
-    uploadFileMutation.mutate({ data: { fileName } });
+  const handleFileUpload = (file: File): void => {
+    setPendingFile(file);
+    uploadFileMutation.mutate({ data: { fileName: file.name } });
   };
 
-  const handleDragOver = (e: DragEvent) => {
+  const isUploading =
+    uploadFileMutation.isPending || uploadToPresignedUrlMutation.isPending;
+
+  if (isUploading) {
+    return (
+      <ProgressView
+        fileName={pendingFile?.name}
+        progress={uploadToPresignedUrlMutation.progress}
+      />
+    );
+  }
+
+  return (
+    <UploaderView
+      handleFileUpload={handleFileUpload}
+      isUploading={isUploading}
+    />
+  );
+}
+
+type ProgressViewProps = {
+  fileName?: string;
+  progress?: number;
+};
+
+function ProgressView({ fileName, progress }: ProgressViewProps) {
+  const isIndeterminate = progress === undefined;
+  const displayProgress = isIndeterminate ? 100 : progress;
+
+  return (
+    <Stack
+      align="center"
+      justify="center"
+      gap="sm"
+      px="xl"
+      py="lg"
+      bd="1px solid slate.2"
+      bdrs="sm"
+    >
+      {fileName && (
+        <Text fw={700} c="slate.9" size="sm">
+          {fileName}
+        </Text>
+      )}
+      <Progress
+        value={displayProgress}
+        color="blue"
+        size="md"
+        radius="xl"
+        striped={isIndeterminate}
+        animated={isIndeterminate}
+        w="100%"
+        transitionDuration={200}
+      />
+      <Text size="sm" c="slate.5">
+        {isIndeterminate
+          ? "Preparing upload…"
+          : `Uploading... ${displayProgress}%`}
+      </Text>
+    </Stack>
+  );
+}
+
+type UploaderView = {
+  handleFileUpload: (file: File) => void;
+  isUploading: boolean;
+};
+
+function UploaderView({ handleFileUpload, isUploading }: UploaderView) {
+  const [isDragging, setIsDragging] = useState(false);
+
+  const handleDragOver = (e: DragEvent): void => {
     e.preventDefault();
     setIsDragging(true);
   };
 
-  const handleDragLeave = () => setIsDragging(false);
+  const handleDragLeave = (): void => setIsDragging(false);
 
-  const handleDrop = (e: DragEvent) => {
+  const handleDrop = (e: DragEvent): void => {
     e.preventDefault();
     setIsDragging(false);
     const file = e.dataTransfer.files[0];
@@ -112,6 +212,8 @@ export function WorkspaceUploader() {
               fw="600"
               c="slate.9"
               bd="1px solid slate.9"
+              loading={isUploading}
+              disabled={isUploading}
             >
               Browse Files
             </Button>

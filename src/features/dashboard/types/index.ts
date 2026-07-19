@@ -17,3 +17,12 @@ export interface TranscriptionPreferences {
   autoPunctuation: boolean;
   timecoding: boolean;
 }
+
+export const TranscriptionJobStatus = {
+  Uploaded: 1,
+  Processing: 2,
+  Completed: 3,
+} as const;
+
+export type TranscriptionJobStatus =
+  (typeof TranscriptionJobStatus)[keyof typeof TranscriptionJobStatus];

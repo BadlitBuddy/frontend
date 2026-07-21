@@ -13,3 +13,5 @@ export type User = Entity<{
   lastName: string;
   email: string;
 }>;
+
+export type JobStatus = "Processing" | "Finished";

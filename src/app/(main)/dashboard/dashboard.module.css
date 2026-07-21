@@ -3,6 +3,7 @@
   grid-template-columns: 1fr;
   gap: var(--mantine-spacing-md);
   align-items: stretch;
+  min-height: 280px;
 }
 
 @media (min-width: 768px) {

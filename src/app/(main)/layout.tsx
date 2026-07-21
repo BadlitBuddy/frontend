@@ -27,6 +27,7 @@ import Image from "next/image";
 import classes from "./layout.module.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ProtectedRoute, useUser, useLogout } from "@/lib/auth";
+import { Notifications } from "@/components/notifications/notifications";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -227,6 +228,7 @@ function InnerAppLayout({ children }: { children: React.ReactNode }) {
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
+      <Notifications />
       <ProtectedRoute>
         <InnerAppLayout>{children}</InnerAppLayout>
       </ProtectedRoute>

@@ -19,9 +19,9 @@ export interface TranscriptionPreferences {
 }
 
 export const TranscriptionJobStatus = {
-  Uploaded: 1,
-  Processing: 2,
-  Completed: 3,
+  Uploaded: 0,
+  Processing: 1,
+  Completed: 2,
 } as const;
 
 export type TranscriptionJobStatus =

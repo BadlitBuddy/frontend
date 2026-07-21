@@ -1,22 +1,32 @@
 "use client";
 
-import { useState, type DragEvent } from "react";
+import { useEffect, useRef, useState, type DragEvent } from "react";
 import {
   Box,
   Button,
   FileButton,
+  Flex,
   Progress,
   Stack,
   Text,
   Title,
 } from "@mantine/core";
-import { UploadIcon } from "lucide-react";
+import { HeadsetIcon, UploadIcon } from "lucide-react";
 import classes from "../styles/WorkspaceUploader.module.css";
 import { useUploadFile } from "../api/upload-file";
 import { useNotifications } from "@/components/notifications/notifications-store";
 import { useUploadFileToPresignedUrl } from "../api/upload-to-s3";
 import { useUpdateFileStatus } from "../api/update-file-status";
 import { TranscriptionJobStatus } from "../types";
+import { useGetFileEvents } from "../api/get-file-events";
+import {
+  CircleLoaderIcon,
+  LoaderCircleIconHandle,
+} from "@/components/icons/CircleLoaderIcon";
+import {
+  AudioLinesIcon,
+  AudioLinesIconHandle,
+} from "@/components/icons/AudioLinesIcon";
 
 const ACCEPTED_MIME_TYPES = [
   "audio/*",
@@ -37,8 +47,36 @@ export function WorkspaceUploader() {
   const [pendingFile, setPendingFile] = useState<File | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
 
+  const { data, error, start, stop } = useGetFileEvents();
+
+  useEffect(() => {
+    if (!data) return;
+
+    if (data.jobStatus?.value === "Finished") {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setIsProcessing(false);
+      stop();
+    }
+  }, [data, stop]);
+
+  if (error) {
+    console.error("Error receiving file events:", error);
+  }
+
+  useEffect(() => {
+    return () => {
+      stop();
+    };
+  }, [stop]);
+
   const updateFileStatusMutation = useUpdateFileStatus({
-    mutationConfig: {},
+    mutationConfig: {
+      onSuccess: (data) => {
+        start({
+          unprocessedObjectKeys: [data.unprocessedObjectKey],
+        });
+      },
+    },
   });
 
   const uploadToPresignedUrlMutation = useUploadFileToPresignedUrl({
@@ -64,10 +102,11 @@ export function WorkspaceUploader() {
 
   const uploadFileMutation = useUploadFile({
     mutationConfig: {
-      onSuccess: (data) => {
+      onSuccess: async (data) => {
         if (!pendingFile) return;
+        setIsProcessing(true);
 
-        uploadToPresignedUrlMutation.mutate({
+        await uploadToPresignedUrlMutation.mutateAsync({
           presignedUrl: data.url,
           file: pendingFile,
         });
@@ -79,8 +118,6 @@ export function WorkspaceUploader() {
             transcriptionJobStatus: TranscriptionJobStatus.Uploaded,
           },
         });
-
-        setIsProcessing(true);
       },
     },
   });
@@ -103,7 +140,7 @@ export function WorkspaceUploader() {
   }
 
   if (isProcessing) {
-    return <TranscriptionInProgressView />;
+    return <TranscriptionInProgressView fileName={pendingFile?.name} />;
   }
 
   return (
@@ -114,8 +151,102 @@ export function WorkspaceUploader() {
   );
 }
 
-function TranscriptionInProgressView() {
-  return <>processing</>;
+const pseudoProcessingLabels = [
+  "Uploading Audio",
+  "Analyzing Audio Quality",
+  "Transcribing Speech",
+  "Applying Formatting & Punctuation",
+  "Generating Timestamps",
+  "Translating Text",
+  "Running Quality Checks",
+  "Finalizing Transcript",
+  "Running Ai models",
+  "Setting up the workspace",
+];
+
+type TranscriptionInProgressViewProps = {
+  fileName?: string;
+  intervalMs?: number;
+};
+function TranscriptionInProgressView({
+  fileName,
+  intervalMs = 2000,
+}: TranscriptionInProgressViewProps) {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentIndex(
+        (prevIndex) => (prevIndex + 1) % pseudoProcessingLabels.length,
+      );
+    }, intervalMs);
+
+    return () => clearInterval(timer);
+  }, [intervalMs]);
+
+  const loaderRef = useRef<LoaderCircleIconHandle>(null);
+  useEffect(() => {
+    loaderRef.current?.startAnimation();
+  }, []);
+
+  const audioLinesRef = useRef<AudioLinesIconHandle>(null);
+  useEffect(() => {
+    audioLinesRef.current?.startAnimation();
+  }, []);
+
+  return (
+    <Stack
+      align="start"
+      justify="start"
+      gap="sm"
+      px="xl"
+      py="lg"
+      bd="1px solid slate.2"
+      bdrs="sm"
+      bg="white"
+    >
+      <Flex w="100%">
+        <Box p={10} bd="1px solid slate.3" bdrs="lg">
+          <HeadsetIcon size={32} className="text-ws-text-secondary" />
+        </Box>
+        <Stack gap={0} ml="md">
+          <Title order={5} c="slate.9">
+            {fileName ?? "Unknown File"}
+          </Title>
+          <Text size="sm" c="slate.5">
+            AI Transcription actively processing...
+          </Text>
+        </Stack>
+      </Flex>
+
+      <Box
+        className="grow flex items-center justify-center"
+        w="100%"
+        bg="slate.1"
+        bdrs="lg"
+        p="sm"
+      >
+        <AudioLinesIcon
+          className="text-ws-text-secondary"
+          size={72}
+          ref={audioLinesRef}
+        />
+      </Box>
+
+      <Flex align="center" justify="space-between" gap="xs" w="100%">
+        <Text size="sm" c="slate.5">
+          {pseudoProcessingLabels[currentIndex]}...
+        </Text>
+
+        <Box>
+          <CircleLoaderIcon
+            className="text-ws-text-secondary"
+            size={22}
+            ref={loaderRef}
+          />
+        </Box>
+      </Flex>
+    </Stack>
+  );
 }
 
 type ProgressViewProps = {

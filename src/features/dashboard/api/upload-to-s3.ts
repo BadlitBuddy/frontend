@@ -13,6 +13,13 @@ type UploadFileToPresignedUrlInternalInput = UploadFileToPresignedUrlInput & {
   onProgress?: (progress: number) => void;
 };
 
+function getSafeMimeType(file: File): string {
+  if (file.name.endsWith('.wav') || file.type.includes('wav')) {
+    return 'audio/wav';
+  }
+  return file.type || 'application/octet-stream';
+}
+
 export const uploadFileToPresignedUrl = async ({
   presignedUrl,
   file,
@@ -20,7 +27,7 @@ export const uploadFileToPresignedUrl = async ({
 }: UploadFileToPresignedUrlInternalInput): Promise<void> => {
   await axios.put(presignedUrl, file, {
     headers: {
-      "Content-Type": file.type,
+      "Content-Type": getSafeMimeType(file),
     },
     onUploadProgress: (event: AxiosProgressEvent) => {
       if (!onProgress) return;

@@ -47,8 +47,14 @@ All project-specific docs and skills live in the `.ai/` directory at the project
 └── skills/
     ├── daisyui/
         └── SKILL.md                ← DaisyUI 5 skill (with sub-guides for install, usage, config, colors, components)
-    └── mantinev9/
+    ├── mantinev9/
         └── SKILL.md                ← Mantine v9 skill (with sub-guides for theme-core, color-system, typography, components)
+    ├── multi-stage-dockerfile/
+        └── SKILL.md                ← Multi-stage Dockerfile patterns (builder/runtime stages, layer caching, security)
+    ├── github-actions-templates/
+        └── SKILL.md                ← GitHub Actions workflow templates (test, build/push, deploy, matrix builds)
+    └── deployment-pipeline-design/
+        └── SKILL.md                ← Multi-stage CI/CD pipeline architecture (approval gates, canary/blue-green, rollback)
 ```
 
 ---
@@ -83,6 +89,22 @@ Then follow its mandatory reference table to read sub-guides as needed (theme, c
 **Read:** [`.ai/skills/daisyui/SKILL.md`](./.ai/skills/daisyui/SKILL.md)
 
 Then follow its mandatory reference table to read sub-guides as needed (usage, colors, components). Do **not** apply DaisyUI to the authenticated application — use Mantine there.
+
+---
+
+### CI/CD & Deployment Skills
+
+**When:** Before writing or editing any `Dockerfile`, `.github/workflows/*`, or deployment/pipeline configuration.
+
+Pick the skill(s) that match the scope of the change — load more than one if the task spans build, pipeline, and rollout concerns.
+
+| Task | Read |
+| --- | --- |
+| Writing or updating a `Dockerfile` | [`.ai/skills/multi-stage-dockerfile/SKILL.md`](./.ai/skills/multi-stage-dockerfile/SKILL.md) — multi-stage builds, base image selection, layer caching, non-root runtime users |
+| Writing or updating GitHub Actions workflows (`.github/workflows/*.yml`) | [`.ai/skills/github-actions-templates/SKILL.md`](./.ai/skills/github-actions-templates/SKILL.md) — test/build/deploy job templates, matrix builds, reusable workflows, security scanning |
+| Designing or debugging the overall deployment pipeline (environment promotion, approval gates, canary/blue-green rollout, rollback strategy) | [`.ai/skills/deployment-pipeline-design/SKILL.md`](./.ai/skills/deployment-pipeline-design/SKILL.md) — see its `references/details.md` and `references/advanced-strategies.md` for platform-specific and multi-region patterns |
+
+Do **not** hand-roll Dockerfile or workflow YAML from memory — read the matching skill first, since these encode project-specific caching, security, and rollback conventions that aren't obvious from the file alone.
 
 ---
 

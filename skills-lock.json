@@ -13,6 +13,12 @@
       "skillPath": "plugins/cicd-automation/skills/deployment-pipeline-design/SKILL.md",
       "computedHash": "57b928db2182b0fae02581e95a3b77f0354d2b1f5a48dd12eadf2f0ddbb34db8"
     },
+    "github-actions-efficiency": {
+      "source": "github/awesome-copilot",
+      "sourceType": "github",
+      "skillPath": "skills/github-actions-efficiency/SKILL.md",
+      "computedHash": "92628da7f3eb2ae5625168f31587712a3cd77ac9ba5a23ffc24e86fd12c4408c"
+    },
     "github-actions-templates": {
       "source": "wshobson/agents",
       "sourceType": "github",
@@ -24,6 +30,12 @@
       "sourceType": "github",
       "skillPath": "skills/multi-stage-dockerfile/SKILL.md",
       "computedHash": "698bf93a84dae18fd7bd0b1d35c21427307fde78fbdf4624be9726f5f98189ca"
+    },
+    "nextjs-deployment": {
+      "source": "giuseppe-trisciuoglio/developer-kit",
+      "sourceType": "github",
+      "skillPath": "plugins/developer-kit-typescript/skills/nextjs-deployment/SKILL.md",
+      "computedHash": "f4a4b490893df14bc34b890f6c57c0b932a4b25efb10c5b1da1ae5c57a789890"
     }
   }
 }

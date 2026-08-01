@@ -12,12 +12,14 @@ import { MainPageContainer } from "../_components/MainPageContainer";
 function parseDurationToSeconds(duration: string): number {
   const parts = duration.split(":").map(Number);
   if (parts.length === 3) {
-    return parts[0] * 3600 + parts[1] * 60 + parts[2];
+    const [h = 0, m = 0, s = 0] = parts;
+    return h * 3600 + m * 60 + s;
   }
   if (parts.length === 2) {
-    return parts[0] * 60 + parts[1];
+    const [m = 0, s = 0] = parts;
+    return m * 60 + s;
   }
-  return parts[0] || 0;
+  return parts[0] ?? 0;
 }
 
 // Preset selection to match the mockup image state on first load
@@ -88,14 +90,16 @@ export default function TranscriptsPage() {
       if (dateRange !== "all") {
         if (dateRange === "Last 7 Days") {
           // Oct 18 to Oct 24 in our mock dataset
-          const day = parseInt(item.date.split(" ")[1], 10);
+          const datePart = item.date.split(" ")[1];
+          const day = datePart ? parseInt(datePart, 10) : 0;
           if (!item.date.includes("Oct") || day < 18 || day > 24) return false;
         } else if (dateRange === "Last 30 Days") {
           // Show all October dates
           if (!item.date.includes("Oct")) return false;
         } else {
           // Specific Month Selection, e.g., "October 2024" -> contains "Oct"
-          const monthQuery = dateRange.split(" ")[0].substring(0, 3); // "Oct" or "Sep"
+          const firstWord = dateRange.split(" ")[0];
+          const monthQuery = firstWord ? firstWord.substring(0, 3) : ""; // "Oct" or "Sep"
           if (!item.date.includes(monthQuery)) return false;
         }
       }

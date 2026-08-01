@@ -1,7 +1,9 @@
 <!-- intent-skills:start -->
+
 ## Skill Loading
 
 Before editing files for a substantial task:
+
 - Run `pnpm dlx @tanstack/intent@latest list` from the workspace root to see available local skills.
 - If a listed skill matches the task, run `pnpm dlx @tanstack/intent@latest load <package>#<skill>` before changing files.
 - Use the loaded `SKILL.md` guidance while making the change.
@@ -46,15 +48,19 @@ All project-specific docs and skills live in the `.ai/` directory at the project
 │   └── frontend-design-system.md   ← Design system: colors, typography, spacing, component rules
 └── skills/
     ├── daisyui/
-        └── SKILL.md                ← DaisyUI 5 skill (with sub-guides for install, usage, config, colors, components)
-    ├── mantinev9/
-        └── SKILL.md                ← Mantine v9 skill (with sub-guides for theme-core, color-system, typography, components)
-    ├── multi-stage-dockerfile/
-        └── SKILL.md                ← Multi-stage Dockerfile patterns (builder/runtime stages, layer caching, security)
+    │   └── SKILL.md                ← DaisyUI 5 skill (with sub-guides for install, usage, config, colors, components)
+    ├── deployment-pipeline-design/
+    │   └── SKILL.md                ← Multi-stage CI/CD pipeline architecture (approval gates, canary/blue-green, rollback)
+    ├── github-actions-efficiency/
+    │   └── SKILL.md                ← Audit GitHub Actions workflow efficiency and reduce CI minutes and costs
     ├── github-actions-templates/
-        └── SKILL.md                ← GitHub Actions workflow templates (test, build/push, deploy, matrix builds)
-    └── deployment-pipeline-design/
-        └── SKILL.md                ← Multi-stage CI/CD pipeline architecture (approval gates, canary/blue-green, rollback)
+    │   └── SKILL.md                ← GitHub Actions workflow templates (test, build/push, deploy, matrix builds)
+    ├── mantinev9/
+    │   └── SKILL.md                ← Mantine v9 skill (with sub-guides for theme-core, color-system, typography, components)
+    ├── multi-stage-dockerfile/
+    │   └── SKILL.md                ← Multi-stage Dockerfile patterns (builder/runtime stages, layer caching, security)
+    └── nextjs-deployment/
+        └── SKILL.md                ← Next.js production deployment patterns (standalone output, Docker, CI/CD, monitoring)
 ```
 
 ---
@@ -98,10 +104,12 @@ Then follow its mandatory reference table to read sub-guides as needed (usage, c
 
 Pick the skill(s) that match the scope of the change — load more than one if the task spans build, pipeline, and rollout concerns.
 
-| Task | Read |
-| --- | --- |
-| Writing or updating a `Dockerfile` | [`.ai/skills/multi-stage-dockerfile/SKILL.md`](./.ai/skills/multi-stage-dockerfile/SKILL.md) — multi-stage builds, base image selection, layer caching, non-root runtime users |
-| Writing or updating GitHub Actions workflows (`.github/workflows/*.yml`) | [`.ai/skills/github-actions-templates/SKILL.md`](./.ai/skills/github-actions-templates/SKILL.md) — test/build/deploy job templates, matrix builds, reusable workflows, security scanning |
+| Task                                                                                                                                         | Read                                                                                                                                                                                                                           |
+| -------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Writing or updating a `Dockerfile`                                                                                                           | [`.ai/skills/multi-stage-dockerfile/SKILL.md`](./.ai/skills/multi-stage-dockerfile/SKILL.md) — multi-stage builds, base image selection, layer caching, non-root runtime users                                                 |
+| Writing or updating GitHub Actions workflows (`.github/workflows/*.yml`)                                                                     | [`.ai/skills/github-actions-templates/SKILL.md`](./.ai/skills/github-actions-templates/SKILL.md) — test/build/deploy job templates, matrix builds, reusable workflows, security scanning                                       |
+| Auditing or optimizing GitHub Actions CI efficiency                                                                                          | [`.ai/skills/github-actions-efficiency/SKILL.md`](./.ai/skills/github-actions-efficiency/SKILL.md) — audit workflow efficiency, dependency caching, concurrency cancellation, matrix reduction                                 |
+| Deploying or containerizing Next.js applications                                                                                             | [`.ai/skills/nextjs-deployment/SKILL.md`](./.ai/skills/nextjs-deployment/SKILL.md) — standalone Docker builds, environment variables, health checks, OpenTelemetry monitoring                                                  |
 | Designing or debugging the overall deployment pipeline (environment promotion, approval gates, canary/blue-green rollout, rollback strategy) | [`.ai/skills/deployment-pipeline-design/SKILL.md`](./.ai/skills/deployment-pipeline-design/SKILL.md) — see its `references/details.md` and `references/advanced-strategies.md` for platform-specific and multi-region patterns |
 
 Do **not** hand-roll Dockerfile or workflow YAML from memory — read the matching skill first, since these encode project-specific caching, security, and rollback conventions that aren't obvious from the file alone.

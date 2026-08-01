@@ -46,8 +46,9 @@ async function main() {
         `\nSelect a route group (1-${routeGroups.length}): `,
       );
       const choiceIndex = parseInt(choice.trim(), 10) - 1;
-      if (choiceIndex >= 0 && choiceIndex < routeGroups.length) {
-        selectedGroup = routeGroups[choiceIndex];
+      const selected = routeGroups[choiceIndex];
+      if (selected) {
+        selectedGroup = selected;
       } else {
         console.log("Invalid selection. Please try again.");
       }

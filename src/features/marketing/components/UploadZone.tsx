@@ -25,9 +25,9 @@ export default function UploadZone() {
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (files && files.length > 0) {
-      startMockUpload(files[0]);
+    const file = e.target.files?.[0];
+    if (file) {
+      startMockUpload(file);
     }
   };
 
@@ -37,9 +37,9 @@ export default function UploadZone() {
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
-    const files = e.dataTransfer.files;
-    if (files && files.length > 0) {
-      startMockUpload(files[0]);
+    const file = e.dataTransfer.files?.[0];
+    if (file) {
+      startMockUpload(file);
     }
   };
 

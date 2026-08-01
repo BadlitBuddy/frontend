@@ -13,6 +13,12 @@
       "skillPath": "plugins/cicd-automation/skills/deployment-pipeline-design/SKILL.md",
       "computedHash": "57b928db2182b0fae02581e95a3b77f0354d2b1f5a48dd12eadf2f0ddbb34db8"
     },
+    "github-actions-efficiency": {
+      "source": "github/awesome-copilot",
+      "sourceType": "github",
+      "skillPath": "skills/github-actions-efficiency/SKILL.md",
+      "computedHash": "92628da7f3eb2ae5625168f31587712a3cd77ac9ba5a23ffc24e86fd12c4408c"
+    },
     "github-actions-templates": {
       "source": "wshobson/agents",
       "sourceType": "github",

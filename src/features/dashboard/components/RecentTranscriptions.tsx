@@ -1,49 +1,14 @@
 "use client";
 
-import { Anchor, Badge, Box, Group, Table, Text } from "@mantine/core";
+import { Anchor, Badge, Box, Group, Skeleton, Table, Text } from "@mantine/core";
 import { AudioWaveformIcon, DownloadIcon } from "lucide-react";
 import Link from "next/link";
-import type { Transcript, TranscriptStatus } from "../types";
+import { useGetTranscripts } from "@/features/transcripts/api/get-transcripts";
+import { TranscriptionJobStatus } from "../types";
 import classes from "../styles/RecentTranscriptions.module.css";
 
-// TODO: fetch recent transcripts from the backend instead of hardcoding them here
-const RECENT_TRANSCRIPTS: Transcript[] = [
-  {
-    id: "1",
-    fileName: "Weekly_Product_Sync_23_Oct.mp3",
-    fileType: "mp3",
-    date: "Oct 23, 2024",
-    duration: "42:15",
-    status: "completed",
-  },
-  {
-    id: "2",
-    fileName: "Client_Interview_Jane_Doe.mp4",
-    fileType: "mp4",
-    date: "Oct 22, 2024",
-    duration: "18:04",
-    status: "completed",
-  },
-  {
-    id: "3",
-    fileName: "Internal_Strategy_Workshop.wav",
-    fileType: "wav",
-    date: "Oct 24, 2024",
-    duration: "124:30",
-    status: "processing",
-  },
-  {
-    id: "4",
-    fileName: "User_Testing_Session_04.mp3",
-    fileType: "mp3",
-    date: "Oct 20, 2024",
-    duration: "25:12",
-    status: "completed",
-  },
-];
-
-function StatusBadge({ status }: { status: TranscriptStatus }) {
-  if (status === "completed") {
+function StatusBadge({ status }: { status: TranscriptionJobStatus }) {
+  if (status === TranscriptionJobStatus.Completed) {
     return (
       <Badge
         variant="dot"
@@ -66,7 +31,7 @@ function StatusBadge({ status }: { status: TranscriptStatus }) {
     );
   }
 
-  if (status === "processing") {
+  if (status === TranscriptionJobStatus.Processing) {
     return (
       <Badge
         variant="dot"
@@ -90,14 +55,22 @@ function StatusBadge({ status }: { status: TranscriptStatus }) {
   }
 
   return (
-    <Badge variant="dot" size="sm" color="error.6">
-      Failed
+    <Badge variant="dot" size="sm" color="slate.5">
+      Uploaded
     </Badge>
   );
 }
 
-function RowAction({ transcript }: { transcript: Transcript }) {
-  if (transcript.status === "processing") {
+function RowAction({
+  id,
+  fileName,
+  status,
+}: {
+  id: string;
+  fileName: string;
+  status: TranscriptionJobStatus;
+}) {
+  if (status === TranscriptionJobStatus.Processing) {
     return (
       <Text size="xs" fw={600} c="slate.4" lts="0.04em" tt="uppercase">
         Please wait…
@@ -109,7 +82,7 @@ function RowAction({ transcript }: { transcript: Transcript }) {
     <Group gap={8} justify="flex-end">
       <Anchor
         component={Link}
-        href={`/transcripts/${transcript.id}`}
+        href={`/transcripts/${encodeURIComponent(id)}`}
         size="xs"
         fw={700}
         underline="hover"
@@ -121,7 +94,7 @@ function RowAction({ transcript }: { transcript: Transcript }) {
       </Anchor>
       <Box
         component="button"
-        aria-label={`Download ${transcript.fileName}`}
+        aria-label={`Download ${fileName}`}
         style={{
           background: "none",
           border: "none",
@@ -145,6 +118,12 @@ function RowAction({ transcript }: { transcript: Transcript }) {
 }
 
 export function RecentTranscriptions() {
+  const { data, isLoading } = useGetTranscripts({
+    params: { page: 1, limit: 5 },
+  });
+
+  const transcripts = data?.items || [];
+
   return (
     <Box>
       <Group justify="space-between" mb="sm">
@@ -195,58 +174,100 @@ export function RecentTranscriptions() {
         </Table.Thead>
 
         <Table.Tbody>
-          {RECENT_TRANSCRIPTS.map((transcript) => (
-            <Table.Tr
-              key={transcript.id}
-              style={{
-                cursor:
-                  transcript.status === "completed" ? "pointer" : "default",
-              }}
-            >
-              <Table.Td>
-                <Group gap="xs" wrap="nowrap">
-                  <AudioWaveformIcon
-                    size={16}
-                    color="var(--mantine-color-slate-4)"
-                  />
-                  <Text
-                    size="sm"
-                    fw={500}
-                    c="slate.8"
-                    ff="var(--font-jetbrains-mono), monospace"
-                    fz="0.8rem"
-                  >
-                    {transcript.fileName}
-                  </Text>
-                </Group>
-              </Table.Td>
-
-              <Table.Td>
-                <Text size="sm" c="slate.5">
-                  {transcript.date}
+          {isLoading ? (
+            Array.from({ length: 4 }).map((_, index) => (
+              <Table.Tr key={index}>
+                <Table.Td>
+                  <Skeleton height={20} radius="sm" />
+                </Table.Td>
+                <Table.Td>
+                  <Skeleton height={20} radius="sm" />
+                </Table.Td>
+                <Table.Td>
+                  <Skeleton height={20} radius="sm" />
+                </Table.Td>
+                <Table.Td>
+                  <Skeleton height={20} radius="sm" />
+                </Table.Td>
+                <Table.Td>
+                  <Skeleton height={20} radius="sm" />
+                </Table.Td>
+              </Table.Tr>
+            ))
+          ) : transcripts.length === 0 ? (
+            <Table.Tr>
+              <Table.Td colSpan={5}>
+                <Text size="sm" c="slate.5" py="md" >
+                  No transcripts found.
                 </Text>
-              </Table.Td>
-
-              <Table.Td>
-                <Text
-                  size="sm"
-                  c="slate.6"
-                  ff="var(--font-jetbrains-mono), monospace"
-                  fz="0.82rem"
-                >
-                  {transcript.duration}
-                </Text>
-              </Table.Td>
-
-              <Table.Td>
-                <StatusBadge status={transcript.status} />
-              </Table.Td>
-
-              <Table.Td>
-                <RowAction transcript={transcript} />
               </Table.Td>
             </Table.Tr>
-          ))}
+          ) : (
+            transcripts.map((item) => {
+              const id = item.unprocessedObjectKey;
+              const fileName = item.originalUnprocessedFileName;
+              const status = item.jobStatus;
+              // TODO: Replace mocked duration with actual duration when available
+              const mockedDuration = "--:--";
+              const mockedDate = new Date(item.createdAt).toLocaleDateString(undefined, {
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+              });
+
+              return (
+                <Table.Tr
+                  key={id}
+                  style={{
+                    cursor: status === TranscriptionJobStatus.Completed ? "pointer" : "default",
+                  }}
+                >
+                  <Table.Td>
+                    <Group gap="xs" wrap="nowrap">
+                      <AudioWaveformIcon
+                        size={16}
+                        color="var(--mantine-color-slate-4)"
+                      />
+                      <Text
+                        size="sm"
+                        fw={500}
+                        c="slate.8"
+                        ff="var(--font-jetbrains-mono), monospace"
+                        fz="0.8rem"
+                      >
+                        {fileName}
+                      </Text>
+                    </Group>
+                  </Table.Td>
+
+                  <Table.Td>
+                    <Text size="sm" c="slate.5">
+                      {mockedDate}
+                    </Text>
+                  </Table.Td>
+
+                  <Table.Td>
+                    <Text
+                      size="sm"
+                      c="slate.6"
+                      ff="var(--font-jetbrains-mono), monospace"
+                      fz="0.82rem"
+                    >
+                      {mockedDuration}
+                    </Text>
+                  </Table.Td>
+
+                  <Table.Td>
+                    <StatusBadge status={status} />
+                  </Table.Td>
+
+                  <Table.Td>
+                    <RowAction id={id} fileName={fileName} status={status} />
+                  </Table.Td>
+                </Table.Tr>
+              );
+            })
+          )}
         </Table.Tbody>
       </Table>
     </Box>

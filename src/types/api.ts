@@ -14,4 +14,13 @@ export type User = Entity<{
   email: string;
 }>;
 
+export type PaginatedList<T> = {
+  items: T[];
+  pageNumber: number;
+  totalPages: number;
+  totalCount: number;
+  hasPreviousPage: boolean;
+  hasNextPage: boolean;
+};
+
 export type JobStatus = "Processing" | "Finished";

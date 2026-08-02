@@ -1,5 +1,6 @@
 "use client";
 
+import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState, type DragEvent } from "react";
 import {
   Box,
@@ -43,6 +44,7 @@ const ACCEPTED_MIME_TYPES = [
 ];
 
 export function WorkspaceUploader() {
+  const queryClient = useQueryClient();
   const { addNotification } = useNotifications();
   const [pendingFile, setPendingFile] = useState<File | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -53,11 +55,14 @@ export function WorkspaceUploader() {
     if (!data) return;
 
     if (data.jobStatus?.value === "Finished") {
+      queryClient.invalidateQueries({
+        queryKey: ["transcripts"],
+      });
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsProcessing(false);
       stop();
     }
-  }, [data, stop]);
+  }, [data, queryClient, stop]);
 
   if (error) {
     console.error("Error receiving file events:", error);
@@ -71,7 +76,10 @@ export function WorkspaceUploader() {
 
   const updateFileStatusMutation = useUpdateFileStatus({
     mutationConfig: {
-      onSuccess: (data) => {
+      onSuccess: async (data) => {
+        await queryClient.invalidateQueries({
+          queryKey: ["transcripts"],
+        });
         start({
           unprocessedObjectKeys: [data.unprocessedObjectKey],
         });

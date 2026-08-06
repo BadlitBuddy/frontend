@@ -1,6 +1,14 @@
 "use client";
 
-import { Anchor, Badge, Box, Group, Skeleton, Table, Text } from "@mantine/core";
+import {
+  Anchor,
+  Badge,
+  Box,
+  Group,
+  Skeleton,
+  Table,
+  Text,
+} from "@mantine/core";
 import { AudioWaveformIcon, DownloadIcon } from "lucide-react";
 import Link from "next/link";
 import { useGetTranscripts } from "@/features/transcripts/api/get-transcripts";
@@ -197,29 +205,35 @@ export function RecentTranscriptions() {
           ) : transcripts.length === 0 ? (
             <Table.Tr>
               <Table.Td colSpan={5}>
-                <Text size="sm" c="slate.5" py="md" >
+                <Text size="sm" c="slate.5" py="md">
                   No transcripts found.
                 </Text>
               </Table.Td>
             </Table.Tr>
           ) : (
             transcripts.map((item) => {
-              const id = item.unprocessedObjectKey;
-              const fileName = item.originalUnprocessedFileName;
+              const id = item.id;
+              const fileName = item.fileName;
               const status = item.jobStatus;
               // TODO: Replace mocked duration with actual duration when available
               const mockedDuration = "--:--";
-              const mockedDate = new Date(item.createdAt).toLocaleDateString(undefined, {
-                year: "numeric",
-                month: "short",
-                day: "numeric",
-              });
+              const mockedDate = new Date(item.createdAt).toLocaleDateString(
+                undefined,
+                {
+                  year: "numeric",
+                  month: "short",
+                  day: "numeric",
+                },
+              );
 
               return (
                 <Table.Tr
                   key={id}
                   style={{
-                    cursor: status === TranscriptionJobStatus.Completed ? "pointer" : "default",
+                    cursor:
+                      status === TranscriptionJobStatus.Completed
+                        ? "pointer"
+                        : "default",
                   }}
                 >
                   <Table.Td>

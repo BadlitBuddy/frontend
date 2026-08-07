@@ -6,13 +6,11 @@ import { TranscriptionJobStatus } from "@/features/dashboard/types";
 import { PaginatedList } from "@/types/api";
 
 export type TranscriptDto = {
-  unprocessedObjectKey: string;
-  originalUnprocessedFileName: string;
-  processedObjectKey: string | null;
-  originalProcessedFileName: string | null;
+  id: string;
+  fileName: string;
   jobStatus: TranscriptionJobStatus;
   jobStatusDesc: string;
-  createdAt: Date;
+  createdAt: string;
 };
 
 export type GetTranscriptsParams = {

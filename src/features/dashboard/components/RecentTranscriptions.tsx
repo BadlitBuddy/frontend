@@ -1,9 +1,32 @@
 "use client";
 
-import { Anchor, Badge, Box, Group, Skeleton, Table, Text } from "@mantine/core";
-import { AudioWaveformIcon, DownloadIcon } from "lucide-react";
+import { useState } from "react";
+
+import {
+  Anchor,
+  Badge,
+  Box,
+  Group,
+  Loader,
+  Menu,
+  Skeleton,
+  Table,
+  Text,
+} from "@mantine/core";
+import {
+  AudioWaveformIcon,
+  CaptionsIcon,
+  DownloadIcon,
+  FileBracesCornerIcon,
+  FileTextIcon,
+} from "lucide-react";
 import Link from "next/link";
+import { useQueryClient } from "@tanstack/react-query";
 import { useGetTranscripts } from "@/features/transcripts/api/get-transcripts";
+import { getTranscriptDownloadUrlQueryOptions } from "@/features/transcripts/api/get-transcript-download-url";
+import { TranscriptionExporter } from "@/features/transcripts/helpers/transcriptionExporter";
+import type { TranscriptionExportFormat } from "@/features/transcripts/helpers/transcriptionExporter";
+import type { TranscriptionResult } from "@/features/transcripts/types";
 import { TranscriptionJobStatus } from "../types";
 import classes from "../styles/RecentTranscriptions.module.css";
 
@@ -111,9 +134,138 @@ function RowAction({
           (e.currentTarget.style.color = "var(--mantine-color-slate-4)")
         }
       >
-        <DownloadIcon size={14} />
+        <DownloadMenu transcriptId={id} />
       </Box>
     </Group>
+  );
+}
+
+function triggerBlobDownload(
+  content: string,
+  fileName: string,
+  mimeType: string,
+) {
+  const blob = new Blob([content], { type: mimeType });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = fileName;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function swapExtension(fileName: string, newExt: string): string {
+  const base = fileName.replace(/\.[^.]+$/, "");
+  return `${base}.${newExt}`;
+}
+
+const MIME_TYPES: Record<TranscriptionExportFormat, string> = {
+  json: "application/json",
+  srt: "text/plain",
+  vtt: "text/vtt",
+  txt: "text/plain",
+};
+
+type DownloadMenuProps = {
+  transcriptId?: string;
+};
+function DownloadMenu({ transcriptId }: DownloadMenuProps) {
+  const queryClient = useQueryClient();
+  const [downloading, setDownloading] = useState<string | null>(null);
+
+  const handleDownload = async (format: TranscriptionExportFormat) => {
+    if (downloading || !transcriptId) return;
+    setDownloading(format);
+
+    try {
+      const { fileName, downloadUrl } = await queryClient.fetchQuery(
+        getTranscriptDownloadUrlQueryOptions(transcriptId),
+      );
+
+      if (format === "json") {
+        const response = await fetch(downloadUrl);
+        const blob = await response.blob();
+        const blobUrl = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = blobUrl;
+        a.download = swapExtension(fileName, "json");
+        a.click();
+        URL.revokeObjectURL(blobUrl);
+      } else {
+        const response = await fetch(downloadUrl);
+        const result: TranscriptionResult = await response.json();
+        const exporter = new TranscriptionExporter();
+        const content = exporter.export(result, format);
+        const outputFileName = swapExtension(fileName, format);
+        triggerBlobDownload(content, outputFileName, MIME_TYPES[format]);
+      }
+    } finally {
+      setDownloading(null);
+    }
+  };
+
+  const isLoading = (format: string) => downloading === format;
+
+  return (
+    <Menu shadow="md" width={150}>
+      <Menu.Target>
+        <Box component="span" style={{ display: "inline-flex" }}>
+          {downloading ? (
+            <Loader size={16} color="slate.5" />
+          ) : (
+            <DownloadIcon size={16} />
+          )}
+        </Box>
+      </Menu.Target>
+
+      <Menu.Dropdown>
+        <Menu.Label>Export Formats</Menu.Label>
+
+        <Menu.Item
+          leftSection={
+            isLoading("json") ? (
+              <Loader size={16} />
+            ) : (
+              <FileBracesCornerIcon size={16} />
+            )
+          }
+          onClick={() => handleDownload("json")}
+          disabled={!!downloading}
+        >
+          .json
+        </Menu.Item>
+
+        <Menu.Item
+          leftSection={
+            isLoading("srt") ? <Loader size={16} /> : <CaptionsIcon size={16} />
+          }
+          onClick={() => handleDownload("srt")}
+          disabled={!!downloading}
+        >
+          .srt
+        </Menu.Item>
+
+        <Menu.Item
+          leftSection={
+            isLoading("vtt") ? <Loader size={16} /> : <CaptionsIcon size={16} />
+          }
+          onClick={() => handleDownload("vtt")}
+          disabled={!!downloading}
+        >
+          .vtt
+        </Menu.Item>
+
+        <Menu.Item
+          leftSection={
+            isLoading("txt") ? <Loader size={16} /> : <FileTextIcon size={16} />
+          }
+          onClick={() => handleDownload("txt")}
+          disabled={!!downloading}
+        >
+          .txt
+        </Menu.Item>
+      </Menu.Dropdown>
+    </Menu>
   );
 }
 
@@ -197,29 +349,35 @@ export function RecentTranscriptions() {
           ) : transcripts.length === 0 ? (
             <Table.Tr>
               <Table.Td colSpan={5}>
-                <Text size="sm" c="slate.5" py="md" >
+                <Text size="sm" c="slate.5" py="md">
                   No transcripts found.
                 </Text>
               </Table.Td>
             </Table.Tr>
           ) : (
             transcripts.map((item) => {
-              const id = item.unprocessedObjectKey;
-              const fileName = item.originalUnprocessedFileName;
+              const id = item.id;
+              const fileName = item.fileName;
               const status = item.jobStatus;
               // TODO: Replace mocked duration with actual duration when available
               const mockedDuration = "--:--";
-              const mockedDate = new Date(item.createdAt).toLocaleDateString(undefined, {
-                year: "numeric",
-                month: "short",
-                day: "numeric",
-              });
+              const mockedDate = new Date(item.createdAt).toLocaleDateString(
+                undefined,
+                {
+                  year: "numeric",
+                  month: "short",
+                  day: "numeric",
+                },
+              );
 
               return (
                 <Table.Tr
                   key={id}
                   style={{
-                    cursor: status === TranscriptionJobStatus.Completed ? "pointer" : "default",
+                    cursor:
+                      status === TranscriptionJobStatus.Completed
+                        ? "pointer"
+                        : "default",
                   }}
                 >
                   <Table.Td>

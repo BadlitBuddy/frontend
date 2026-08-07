@@ -287,8 +287,8 @@ export function RecentTranscriptions() {
           href="/transcripts"
           size="xs"
           fw={700}
+          underline="hover"
           c="slate.5"
-          td="none"
           tt="uppercase"
           lts="0.06em"
           display="flex"
@@ -297,7 +297,7 @@ export function RecentTranscriptions() {
             gap: 4,
           }}
         >
-          View All →
+          View All
         </Anchor>
       </Group>
 

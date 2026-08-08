@@ -11,6 +11,7 @@ export type TranscriptDto = {
   jobStatus: TranscriptionJobStatus;
   jobStatusDesc: string;
   createdAt: string;
+  duration: string;
 };
 
 export type GetTranscriptsParams = {

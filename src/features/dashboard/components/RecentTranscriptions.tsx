@@ -359,9 +359,7 @@ export function RecentTranscriptions() {
               const id = item.id;
               const fileName = item.fileName;
               const status = item.jobStatus;
-              // TODO: Replace mocked duration with actual duration when available
-              const mockedDuration = "--:--";
-              const mockedDate = new Date(item.createdAt).toLocaleDateString(
+              const createdAt = new Date(item.createdAt).toLocaleDateString(
                 undefined,
                 {
                   year: "numeric",
@@ -369,6 +367,7 @@ export function RecentTranscriptions() {
                   day: "numeric",
                 },
               );
+              const duration = item.duration.substring(0, 8);
 
               return (
                 <Table.Tr
@@ -400,7 +399,7 @@ export function RecentTranscriptions() {
 
                   <Table.Td>
                     <Text size="sm" c="slate.5">
-                      {mockedDate}
+                      {createdAt}
                     </Text>
                   </Table.Td>
 
@@ -411,7 +410,7 @@ export function RecentTranscriptions() {
                       ff="var(--font-jetbrains-mono), monospace"
                       fz="0.82rem"
                     >
-                      {mockedDuration}
+                      {duration}
                     </Text>
                   </Table.Td>
 

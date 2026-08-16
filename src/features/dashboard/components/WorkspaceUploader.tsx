@@ -132,7 +132,9 @@ export function WorkspaceUploader() {
 
   const handleFileUpload = (file: File): void => {
     setPendingFile(file);
-    uploadFileMutation.mutate({ data: { fileName: file.name } });
+    uploadFileMutation.mutate({
+      data: { fileName: file.name, fileSize: file.size },
+    });
   };
 
   const isUploading =

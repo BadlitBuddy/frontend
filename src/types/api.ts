@@ -24,3 +24,9 @@ export type PaginatedList<T> = {
 };
 
 export type JobStatus = "Processing" | "Finished";
+
+export const EventTypes = {
+  TranscriptionEvent: "transcription-event",
+} as const;
+
+export type EventType = (typeof EventTypes)[keyof typeof EventTypes];

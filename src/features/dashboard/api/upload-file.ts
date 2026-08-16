@@ -7,6 +7,7 @@ import { MutationConfig } from "@/lib/react-query";
 
 export const FileUploadRequestSchema = z.object({
   fileName: z.string().min(1, "Required"),
+  fileSize: z.number().min(1, "Required"),
 });
 
 export type FileUploadRequest = z.infer<typeof FileUploadRequestSchema>;

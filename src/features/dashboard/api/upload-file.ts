@@ -2,31 +2,37 @@ import { useMutation } from "@tanstack/react-query";
 import { z } from "zod";
 
 import { api } from "@/lib/api-client";
-import { UploadUrlDto } from "../types/api";
 import { MutationConfig } from "@/lib/react-query";
 
-export const FileUploadRequestSchema = z.object({
+export const GetPresignedUrlRequestSchema = z.object({
   fileName: z.string().min(1, "Required"),
   fileSize: z.number().min(1, "Required"),
 });
 
-export type FileUploadRequest = z.infer<typeof FileUploadRequestSchema>;
+export type GetPresignedUrlRequest = z.infer<
+  typeof GetPresignedUrlRequestSchema
+>;
 
-export const uploadFile = ({
+export type UploadUrlDto = {
+  url: string;
+  objectKey: string;
+};
+
+export const getPresignedUrl = ({
   data,
 }: {
-  data: FileUploadRequest;
+  data: GetPresignedUrlRequest;
 }): Promise<UploadUrlDto> => {
   return api.post("/Files", data);
 };
 
-type UseUploadFileOptions = {
-  mutationConfig?: MutationConfig<typeof uploadFile>;
+type UseGetPresignedUrlOptions = {
+  mutationConfig?: MutationConfig<typeof getPresignedUrl>;
 };
 
-export const useUploadFile = ({
+export const useGetPresignedUrl = ({
   mutationConfig,
-}: UseUploadFileOptions = {}) => {
+}: UseGetPresignedUrlOptions = {}) => {
   const { onSuccess, ...restConfig } = mutationConfig || {};
 
   return useMutation({
@@ -34,6 +40,6 @@ export const useUploadFile = ({
       onSuccess?.(...args);
     },
     ...restConfig,
-    mutationFn: uploadFile,
+    mutationFn: getPresignedUrl,
   });
 };

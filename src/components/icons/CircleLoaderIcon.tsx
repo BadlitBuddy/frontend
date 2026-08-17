@@ -2,21 +2,14 @@
 
 import { cn } from "@/utils/cn";
 import type { Transition, Variants } from "motion/react";
-import { motion, useAnimation } from "motion/react";
+import { motion } from "motion/react";
 import type { HTMLAttributes } from "react";
-import { forwardRef, useCallback, useImperativeHandle, useRef } from "react";
 
-export interface LoaderCircleIconHandle {
-  startAnimation: () => void;
-  stopAnimation: () => void;
-}
-
-interface LoaderCircleIconProps extends HTMLAttributes<HTMLDivElement> {
+export interface LoaderCircleIconProps extends HTMLAttributes<HTMLDivElement> {
   size?: number;
 }
 
-const G_VARIANTS: Variants = {
-  normal: { rotate: 0 },
+const PATH_VARIANTS: Variants = {
   animate: {
     rotate: 360,
     transition: {
@@ -33,51 +26,13 @@ const DEFAULT_TRANSITION: Transition = {
   damping: 10,
 };
 
-const LoaderCircleIcon = forwardRef<
-  LoaderCircleIconHandle,
-  LoaderCircleIconProps
->(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
-  const controls = useAnimation();
-  const isControlledRef = useRef(false);
-
-  useImperativeHandle(ref, () => {
-    isControlledRef.current = true;
-
-    return {
-      startAnimation: () => controls.start("animate"),
-      stopAnimation: () => controls.start("normal"),
-    };
-  });
-
-  const handleMouseEnter = useCallback(
-    (e: React.MouseEvent<HTMLDivElement>) => {
-      if (isControlledRef.current) {
-        onMouseEnter?.(e);
-      } else {
-        controls.start("animate");
-      }
-    },
-    [controls, onMouseEnter],
-  );
-
-  const handleMouseLeave = useCallback(
-    (e: React.MouseEvent<HTMLDivElement>) => {
-      if (isControlledRef.current) {
-        onMouseLeave?.(e);
-      } else {
-        controls.start("normal");
-      }
-    },
-    [controls, onMouseLeave],
-  );
-
+const LoaderCircleIcon = ({
+  className,
+  size = 28,
+  ...props
+}: LoaderCircleIconProps) => {
   return (
-    <div
-      className={cn(className)}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-      {...props}
-    >
+    <div className={cn(className)} {...props}>
       <svg
         fill="none"
         height={size}
@@ -90,16 +45,16 @@ const LoaderCircleIcon = forwardRef<
         xmlns="http://www.w3.org/2000/svg"
       >
         <motion.path
-          animate={controls}
+          animate="animate"
           d="M21 12a9 9 0 1 1-6.219-8.56"
           style={{ transformOrigin: "12px 12px" }}
           transition={DEFAULT_TRANSITION}
-          variants={G_VARIANTS}
+          variants={PATH_VARIANTS}
         />
       </svg>
     </div>
   );
-});
+};
 
 LoaderCircleIcon.displayName = "LoaderCircleIcon";
 

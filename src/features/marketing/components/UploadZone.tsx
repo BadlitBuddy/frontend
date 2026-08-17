@@ -7,22 +7,24 @@ import {
   AlertCircleIcon,
 } from "lucide-react";
 import React, { useState, useRef, useEffect } from "react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import {
+  QueryClient,
+  QueryClientProvider,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { queryConfig } from "@/lib/react-query";
 
 import { useGetPresignedUrl } from "@/features/dashboard/api/upload-file";
 import { useUploadFileToPresignedUrl } from "@/features/dashboard/api/upload-to-s3";
 import { useTranscribeFile } from "@/features/transcripts/api/transcribe";
-import {
-  CircleLoaderIcon,
-  LoaderCircleIconHandle,
-} from "@/components/icons/CircleLoaderIcon";
+import { CircleLoaderIcon } from "@/components/icons/CircleLoaderIcon";
 
 import {
   AudioLinesIcon,
   AudioLinesIconHandle,
 } from "@/components/icons/AudioLinesIcon";
 import { useGetTranscriptEventsNative } from "@/features/transcripts/api/get-transcript-events";
+import { useTranscriptionDownload } from "@/features/transcripts/hooks/useTranscriptionDownload";
 
 type UploadState =
   | "idle"
@@ -40,6 +42,7 @@ function UploadZoneContent() {
     name: "",
     audioLength: "",
   });
+  const [transcriptId, setTranscriptId] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -74,6 +77,7 @@ function UploadZoneContent() {
         name: file.name,
         audioLength: result.duration.slice(0, 8),
       });
+      setTranscriptId(result.id);
       start(result.id);
     } catch (err) {
       const message =
@@ -167,10 +171,11 @@ function UploadZoneContent() {
         />
       )}
 
-      {state === "completed" && (
+      {state === "completed" && transcriptId && (
         <CompletedStateView
           fileName={fileMeta.name}
           audioLength={fileMeta.audioLength}
+          transcriptId={transcriptId}
           handleReset={handleReset}
         />
       )}
@@ -251,15 +256,10 @@ type UploadingStateViewProps = {
 };
 
 function UploadingStateView({ fileName, progress }: UploadingStateViewProps) {
-  const circleLoaderRef = useRef<LoaderCircleIconHandle>(null);
-  useEffect(() => {
-    circleLoaderRef.current?.startAnimation();
-  }, []);
-
   return (
     <div className="p-6 bg-ws-surface border border-ws-border rounded-lg shadow-sm w-full">
       <div className="flex items-center gap-3 mb-4">
-        <CircleLoaderIcon size={28} ref={circleLoaderRef} />
+        <CircleLoaderIcon size={28} />
         <div>
           <p className="font-semibold text-sm text-ws-text-primary truncate max-w-62.5">
             {fileName}
@@ -385,13 +385,22 @@ function ErrorStateView({
 type CompletedStateViewProps = {
   fileName?: string;
   audioLength?: string;
+  transcriptId: string;
   handleReset: () => void;
 };
 function CompletedStateView({
   fileName,
   audioLength,
+  transcriptId,
   handleReset,
 }: CompletedStateViewProps) {
+  const queryClient = useQueryClient();
+
+  const { handleDownload, downloading } = useTranscriptionDownload({
+    transcriptId,
+    queryClient,
+  });
+
   return (
     <div className="p-6 bg-ws-surface border border-ws-success/40 rounded-lg shadow-sm animate-fade-in w-full">
       <div className="flex items-center justify-between gap-3 mb-3">
@@ -421,35 +430,61 @@ function CompletedStateView({
           Download Transcription
         </h1>
 
-        <div className="grid grid-cols-4 w-full gap-2">
-          <button className="btn gap-0.5 flex flex-col items-start border-ws-primary/20">
-            <span className="font-semibold text-base leading-none">.srt</span>
-            <span className="text-[10px] leading-none font-medium text-ws-text-secondary">
-              SubRip subtitles.
-            </span>
-          </button>
+        {downloading ? (
+          <CircleLoaderIcon className="text-ws-text-secondary" size={22} />
+        ) : (
+          <div className="grid grid-cols-4 w-full gap-2">
+            <button
+              className="btn gap-0.5 flex flex-col items-start border-ws-primary/20"
+              onClick={() => {
+                handleDownload("srt");
+              }}
+            >
+              <span className="font-semibold text-base leading-none">.srt</span>
+              <span className="text-[10px] leading-none font-medium text-ws-text-secondary">
+                SubRip subtitles.
+              </span>
+            </button>
 
-          <button className="btn gap-0.5 flex flex-col items-start border-ws-primary/20">
-            <span className="font-semibold text-base leading-none">.vtt</span>
-            <span className="text-[10px] leading-none font-medium text-ws-text-secondary">
-              Web subtitles
-            </span>
-          </button>
+            <button
+              className="btn gap-0.5 flex flex-col items-start border-ws-primary/20"
+              onClick={() => {
+                handleDownload("vtt");
+              }}
+            >
+              <span className="font-semibold text-base leading-none">.vtt</span>
+              <span className="text-[10px] leading-none font-medium text-ws-text-secondary">
+                Web subtitles
+              </span>
+            </button>
 
-          <button className="btn gap-0.5 flex flex-col items-start border-ws-primary/20">
-            <span className="font-semibold text-base leading-none">.txt</span>
-            <span className="text-[10px] leading-none font-medium text-ws-text-secondary">
-              Plain text
-            </span>
-          </button>
+            <button
+              className="btn gap-0.5 flex flex-col items-start border-ws-primary/20"
+              onClick={() => {
+                handleDownload("txt");
+              }}
+            >
+              <span className="font-semibold text-base leading-none">.txt</span>
+              <span className="text-[10px] leading-none font-medium text-ws-text-secondary">
+                Plain text
+              </span>
+            </button>
 
-          <button className="btn gap-0.5 flex flex-col items-start border-ws-primary/20">
-            <span className="font-semibold text-base leading-none">.json</span>
-            <span className="text-[10px] leading-none font-medium text-ws-text-secondary">
-              Structured data
-            </span>
-          </button>
-        </div>
+            <button
+              className="btn gap-0.5 flex flex-col items-start border-ws-primary/20"
+              onClick={() => {
+                handleDownload("json");
+              }}
+            >
+              <span className="font-semibold text-base leading-none">
+                .json
+              </span>
+              <span className="text-[10px] leading-none font-medium text-ws-text-secondary">
+                Structured data
+              </span>
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

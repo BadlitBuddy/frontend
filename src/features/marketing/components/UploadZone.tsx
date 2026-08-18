@@ -240,7 +240,7 @@ function IdleStateView({
               Drag a file or click to upload — no sign-up required
             </p>
             <p className="text-xs text-ws-text-muted mt-0.5">
-              Free preview: Maximum of 60 minutes per file, no account required.
+              Maximum of 130mb per file, no account required.
               (.wav, .mp3, .mp4, .m4a, .mov, .avi, .flv, .wmv)
             </p>
           </div>

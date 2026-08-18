@@ -14,16 +14,12 @@ import {
 } from "@mantine/core";
 import { HeadsetIcon, UploadIcon } from "lucide-react";
 import classes from "../styles/WorkspaceUploader.module.css";
-import { useUploadFile } from "../api/upload-file";
+import { useGetPresignedUrl } from "../api/upload-file";
 import { useNotifications } from "@/components/notifications/notifications-store";
 import { useUploadFileToPresignedUrl } from "../api/upload-to-s3";
-import { useUpdateFileStatus } from "../api/update-file-status";
-import { TranscriptionJobStatus } from "../types";
-import { useGetFileEvents } from "../api/get-file-events";
-import {
-  CircleLoaderIcon,
-  LoaderCircleIconHandle,
-} from "@/components/icons/CircleLoaderIcon";
+import { useTranscribeFile } from "@/features/transcripts/api/transcribe";
+import { useGetTranscriptEventsNative } from "@/features/transcripts/api/get-transcript-events";
+import { CircleLoaderIcon } from "@/components/icons/CircleLoaderIcon";
 import {
   AudioLinesIcon,
   AudioLinesIconHandle,
@@ -49,7 +45,7 @@ export function WorkspaceUploader() {
   const [pendingFile, setPendingFile] = useState<File | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
 
-  const { data, error, start, stop } = useGetFileEvents();
+  const { data, error, start, stop } = useGetTranscriptEventsNative();
 
   useEffect(() => {
     if (!data) return;
@@ -74,15 +70,13 @@ export function WorkspaceUploader() {
     };
   }, [stop]);
 
-  const updateFileStatusMutation = useUpdateFileStatus({
+  const transcribeFileMutation = useTranscribeFile({
     mutationConfig: {
       onSuccess: async (data) => {
         await queryClient.invalidateQueries({
           queryKey: ["transcripts"],
         });
-        start({
-          unprocessedObjectKeys: [data.unprocessedObjectKey],
-        });
+        start(data.id);
       },
     },
   });
@@ -108,7 +102,7 @@ export function WorkspaceUploader() {
     },
   });
 
-  const uploadFileMutation = useUploadFile({
+  const uploadFileMutation = useGetPresignedUrl({
     mutationConfig: {
       onSuccess: async (data) => {
         if (!pendingFile) return;
@@ -119,11 +113,10 @@ export function WorkspaceUploader() {
           file: pendingFile,
         });
 
-        updateFileStatusMutation.mutate({
-          unProcessedObjectKey: data.objectKey,
+        transcribeFileMutation.mutate({
           data: {
-            processedObjectKey: null,
-            transcriptionJobStatus: TranscriptionJobStatus.Uploaded,
+            unprocessedObjectKey: data.objectKey,
+            id: null,
           },
         });
       },
@@ -132,7 +125,9 @@ export function WorkspaceUploader() {
 
   const handleFileUpload = (file: File): void => {
     setPendingFile(file);
-    uploadFileMutation.mutate({ data: { fileName: file.name } });
+    uploadFileMutation.mutate({
+      data: { fileName: file.name, fileSize: file.size },
+    });
   };
 
   const isUploading =
@@ -191,11 +186,6 @@ function TranscriptionInProgressView({
     return () => clearInterval(timer);
   }, [intervalMs]);
 
-  const loaderRef = useRef<LoaderCircleIconHandle>(null);
-  useEffect(() => {
-    loaderRef.current?.startAnimation();
-  }, []);
-
   const audioLinesRef = useRef<AudioLinesIconHandle>(null);
   useEffect(() => {
     audioLinesRef.current?.startAnimation();
@@ -246,11 +236,7 @@ function TranscriptionInProgressView({
         </Text>
 
         <Box>
-          <CircleLoaderIcon
-            className="text-ws-text-secondary"
-            size={22}
-            ref={loaderRef}
-          />
+          <CircleLoaderIcon className="text-ws-text-secondary" size={22} />
         </Box>
       </Flex>
     </Stack>

@@ -1,7 +1,5 @@
 "use client";
 
-import { useState } from "react";
-
 import {
   Anchor,
   Badge,
@@ -23,12 +21,9 @@ import {
 import Link from "next/link";
 import { useQueryClient } from "@tanstack/react-query";
 import { useGetTranscripts } from "@/features/transcripts/api/get-transcripts";
-import { getTranscriptDownloadUrlQueryOptions } from "@/features/transcripts/api/get-transcript-download-url";
-import { TranscriptionExporter } from "@/features/transcripts/helpers/transcriptionExporter";
-import type { TranscriptionExportFormat } from "@/features/transcripts/helpers/transcriptionExporter";
-import type { TranscriptionResult } from "@/features/transcripts/types";
 import { TranscriptionJobStatus } from "../types";
 import classes from "../styles/RecentTranscriptions.module.css";
+import { useTranscriptionDownload } from "@/features/transcripts/hooks/useTranscriptionDownload";
 
 function StatusBadge({ status }: { status: TranscriptionJobStatus }) {
   if (status === TranscriptionJobStatus.Completed) {
@@ -84,15 +79,13 @@ function StatusBadge({ status }: { status: TranscriptionJobStatus }) {
   );
 }
 
-function RowAction({
-  id,
-  fileName,
-  status,
-}: {
-  id: string;
+type RowActionProps = {
+  transcriptId: string;
   fileName: string;
   status: TranscriptionJobStatus;
-}) {
+};
+
+function RowAction({ transcriptId, fileName, status }: RowActionProps) {
   if (status === TranscriptionJobStatus.Processing) {
     return (
       <Text size="xs" fw={600} c="slate.4" lts="0.04em" tt="uppercase">
@@ -105,7 +98,7 @@ function RowAction({
     <Group gap={8} justify="flex-end">
       <Anchor
         component={Link}
-        href={`/transcripts/${encodeURIComponent(id)}`}
+        href={`/transcripts/${encodeURIComponent(transcriptId)}`}
         size="xs"
         fw={700}
         underline="hover"
@@ -134,75 +127,22 @@ function RowAction({
           (e.currentTarget.style.color = "var(--mantine-color-slate-4)")
         }
       >
-        <DownloadMenu transcriptId={id} />
+        <DownloadMenu transcriptId={transcriptId} />
       </Box>
     </Group>
   );
 }
 
-function triggerBlobDownload(
-  content: string,
-  fileName: string,
-  mimeType: string,
-) {
-  const blob = new Blob([content], { type: mimeType });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = fileName;
-  a.click();
-  URL.revokeObjectURL(url);
-}
-
-function swapExtension(fileName: string, newExt: string): string {
-  const base = fileName.replace(/\.[^.]+$/, "");
-  return `${base}.${newExt}`;
-}
-
-const MIME_TYPES: Record<TranscriptionExportFormat, string> = {
-  json: "application/json",
-  srt: "text/plain",
-  vtt: "text/vtt",
-  txt: "text/plain",
-};
-
 type DownloadMenuProps = {
-  transcriptId?: string;
+  transcriptId: string;
 };
 function DownloadMenu({ transcriptId }: DownloadMenuProps) {
   const queryClient = useQueryClient();
-  const [downloading, setDownloading] = useState<string | null>(null);
 
-  const handleDownload = async (format: TranscriptionExportFormat) => {
-    if (downloading || !transcriptId) return;
-    setDownloading(format);
-
-    try {
-      const { fileName, downloadUrl } = await queryClient.fetchQuery(
-        getTranscriptDownloadUrlQueryOptions(transcriptId),
-      );
-
-      if (format === "json") {
-        const response = await fetch(downloadUrl);
-        const blob = await response.blob();
-        const blobUrl = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = blobUrl;
-        a.download = swapExtension(fileName, "json");
-        a.click();
-        URL.revokeObjectURL(blobUrl);
-      } else {
-        const response = await fetch(downloadUrl);
-        const result: TranscriptionResult = await response.json();
-        const exporter = new TranscriptionExporter();
-        const content = exporter.export(result, format);
-        const outputFileName = swapExtension(fileName, format);
-        triggerBlobDownload(content, outputFileName, MIME_TYPES[format]);
-      }
-    } finally {
-      setDownloading(null);
-    }
-  };
+  const { handleDownload, downloading } = useTranscriptionDownload({
+    transcriptId,
+    queryClient,
+  });
 
   const isLoading = (format: string) => downloading === format;
 
@@ -419,7 +359,11 @@ export function RecentTranscriptions() {
                   </Table.Td>
 
                   <Table.Td>
-                    <RowAction id={id} fileName={fileName} status={status} />
+                    <RowAction
+                      transcriptId={id}
+                      fileName={fileName}
+                      status={status}
+                    />
                   </Table.Td>
                 </Table.Tr>
               );

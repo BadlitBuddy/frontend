@@ -59,8 +59,13 @@ All project-specific docs and skills live in the `.ai/` directory at the project
     │   └── SKILL.md                ← Mantine v9 skill (with sub-guides for theme-core, color-system, typography, components)
     ├── multi-stage-dockerfile/
     │   └── SKILL.md                ← Multi-stage Dockerfile patterns (builder/runtime stages, layer caching, security)
-    └── nextjs-deployment/
-        └── SKILL.md                ← Next.js production deployment patterns (standalone output, Docker, CI/CD, monitoring)
+    ├── nextjs-deployment/
+    │   └── SKILL.md                ← Next.js production deployment patterns (standalone output, Docker, CI/CD, monitoring)
+    └── project/
+        ├── SKILL.md                ← WordScribe frontend project patterns, architecture, and feature structure
+        └── patterns/
+            └── api-hooks/
+                └── SKILL.md        ← TanStack Query + axios + zod API hooks conventions
 ```
 
 ---
@@ -79,6 +84,14 @@ This document defines the canonical:
 - Typography: **Hanken Grotesk** for UI, **JetBrains Mono** for timestamps/technical content
 - Spacing: Use Mantine's scale (`xs`, `sm`, `md`, `lg`, `xl`)
 - Visual philosophy: clean, calm, distraction-free — the transcript is the primary interface
+
+### Project Architecture Skill
+
+**When:** Creating or modifying features, routes, feature directory structure, API integration, or general frontend architecture.
+
+**Read:** [`.ai/skills/project/SKILL.md`](./.ai/skills/project/SKILL.md)
+
+Follow its rules on bulletproof-react feature isolation, public export surfaces (`index.ts`), shared lib plumbing, and sub-pattern guides such as [`.ai/skills/project/patterns/api-hooks/SKILL.md`](./.ai/skills/project/patterns/api-hooks/SKILL.md).
 
 ### Mantine v9 Skill
 

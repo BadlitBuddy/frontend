@@ -10,6 +10,8 @@ export const TranscriptionJobStatus = {
   Uploaded: 0,
   Processing: 1,
   Completed: 2,
+  Canceled: 3,
+  Failed: 4,
 } as const;
 
 export type TranscriptionJobStatus =

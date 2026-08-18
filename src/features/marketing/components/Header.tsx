@@ -1,6 +1,5 @@
 import Image from "next/image";
 import Link from "next/link";
-import { HistoryIcon } from "lucide-react";
 
 export default function Header() {
   return (
@@ -59,14 +58,6 @@ export default function Header() {
         </nav>
 
         <div className="navbar-end w-auto gap-4">
-          {/* // TODO: Implement recent files functionality */}
-          <button
-            className="btn btn-ghost btn-circle btn-sm"
-            title="Recent Files"
-          >
-            <HistoryIcon size={20} />
-          </button>
-
           <Link
             href="/login"
             className="btn btn-ghost btn-sm text-sm font-medium"

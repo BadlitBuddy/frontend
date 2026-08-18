@@ -8,7 +8,9 @@ interface StartOptions {
   headers?: Record<string, string>;
 }
 
-function useEventSource<TData, TBody = undefined>() {
+type Method = "GET" | "POST" | "PUT" | "DELETE" | "PATCH" | "HEAD";
+
+function useEventSource<TData, TBody = undefined>(method: Method) {
   const [data, setData] = useState<TData | null>(null);
   const [eventType, setEventType] = useState<string | null>(null);
   const [isStreaming, setIsStreaming] = useState<boolean>(false);
@@ -31,8 +33,9 @@ function useEventSource<TData, TBody = undefined>() {
       setIsStreaming(true);
 
       try {
+        const isBodylessMethod = method === "GET" || method === "HEAD";
         await fetchEventSource(url, {
-          method: "POST",
+          method: method,
           headers: {
             "Content-Type": "application/json",
             Accept: "text/event-stream",
@@ -41,7 +44,10 @@ function useEventSource<TData, TBody = undefined>() {
             ...options.headers,
           },
           credentials: "include",
-          body: body === undefined ? undefined : JSON.stringify(body),
+          body:
+            isBodylessMethod || body === undefined
+              ? undefined
+              : JSON.stringify(body),
           signal: ctrl.signal,
 
           async onopen(response) {

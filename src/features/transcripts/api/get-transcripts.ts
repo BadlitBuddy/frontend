@@ -1,4 +1,8 @@
-import { queryOptions, useQuery } from "@tanstack/react-query";
+import {
+  keepPreviousData,
+  queryOptions,
+  useQuery,
+} from "@tanstack/react-query";
 
 import { api } from "@/lib/api-client";
 import { QueryConfig } from "@/lib/react-query";
@@ -15,29 +19,39 @@ export type TranscriptDto = {
 };
 
 export type GetTranscriptsParams = {
-  page?: number | string;
-  limit?: number | string;
+  page: number | string;
+  limit: number | string;
+  fileName?: string;
+  status?: TranscriptionJobStatus;
+  createdFrom?: string;
 };
 
-export const getTranscripts = ({
-  page,
-  limit,
-}: GetTranscriptsParams = {}): Promise<PaginatedList<TranscriptDto>> => {
+export const getTranscripts = (
+  { page, limit, status, createdFrom, fileName }: GetTranscriptsParams = {
+    page: 1,
+    limit: 5,
+  },
+): Promise<PaginatedList<TranscriptDto>> => {
   return api.get("/Transcripts", {
     params: {
       page,
       limit,
+      status,
+      fileName,
+      createdFrom,
     },
   });
 };
 
-export const getTranscriptsQueryOptions = ({
-  page,
-  limit,
-}: GetTranscriptsParams = {}) => {
+export const getTranscriptsQueryOptions = (
+  params: GetTranscriptsParams = {
+    page: 1,
+    limit: 5,
+  },
+) => {
   return queryOptions({
-    queryKey: ["transcripts", { page, limit }],
-    queryFn: () => getTranscripts({ page, limit }),
+    queryKey: ["transcripts", params],
+    queryFn: () => getTranscripts(params),
   });
 };
 

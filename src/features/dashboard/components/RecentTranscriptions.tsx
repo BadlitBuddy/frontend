@@ -1,74 +1,13 @@
 "use client";
 
-import {
-  Anchor,
-  Badge,
-  Box,
-  Group,
-  Skeleton,
-  Table,
-  Text,
-} from "@mantine/core";
+import { Anchor, Box, Group, Skeleton, Table, Text } from "@mantine/core";
 import { AudioWaveformIcon } from "lucide-react";
 import Link from "next/link";
 import { useGetTranscripts } from "@/features/transcripts/api/get-transcripts";
 import { TranscriptionJobStatus } from "../types";
 import classes from "../styles/RecentTranscriptions.module.css";
 import { DownloadMenu } from "@/features/transcripts/components/DownloadMenu";
-
-function StatusBadge({ status }: { status: TranscriptionJobStatus }) {
-  if (status === TranscriptionJobStatus.Completed) {
-    return (
-      <Badge
-        variant="dot"
-        size="sm"
-        color="success.7"
-        styles={{
-          root: {
-            backgroundColor: "var(--mantine-color-success-0)",
-            color: "var(--mantine-color-success-7)",
-            border: "1px solid var(--mantine-color-success-2)",
-            textTransform: "uppercase",
-            letterSpacing: "0.06em",
-            fontWeight: 700,
-            fontSize: "0.65rem",
-          },
-        }}
-      >
-        Completed
-      </Badge>
-    );
-  }
-
-  if (status === TranscriptionJobStatus.Processing) {
-    return (
-      <Badge
-        variant="dot"
-        size="sm"
-        color="warning.6"
-        styles={{
-          root: {
-            backgroundColor: "var(--mantine-color-warning-0)",
-            color: "var(--mantine-color-warning-7)",
-            border: "1px solid var(--mantine-color-warning-2)",
-            textTransform: "uppercase",
-            letterSpacing: "0.06em",
-            fontWeight: 700,
-            fontSize: "0.65rem",
-          },
-        }}
-      >
-        Processing
-      </Badge>
-    );
-  }
-
-  return (
-    <Badge variant="dot" size="sm" color="slate.5">
-      Uploaded
-    </Badge>
-  );
-}
+import { TranscriptStatusBadge } from "@/features/transcripts/components/TranscriptStatusBadge";
 
 type RowActionProps = {
   transcriptId: string;
@@ -270,7 +209,7 @@ export function RecentTranscriptions() {
                   </Table.Td>
 
                   <Table.Td>
-                    <StatusBadge status={status} />
+                    <TranscriptStatusBadge status={status} />
                   </Table.Td>
 
                   <Table.Td>

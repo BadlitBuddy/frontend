@@ -1,47 +1,36 @@
 "use client";
 
-import { Box, Group, Menu, Text, TextInput } from "@mantine/core";
+import { Group, Menu, Text, TextInput } from "@mantine/core";
 import { ChevronDownIcon, SearchIcon } from "lucide-react";
 import classes from "../styles/Transcripts.module.css";
-import { DurationFilter } from "../types";
+import {
+  TranscriptionJobStatus,
+  TranscriptionStatusLabels,
+} from "@/features/dashboard/types";
+import { useEffect, useState } from "react";
+import { useDebouncedValue } from "@mantine/hooks";
 
-interface TranscriptsFiltersProps {
-  searchQuery: string;
+type TranscriptsFiltersProps = {
   onSearchChange: (val: string) => void;
-  dateRange: string;
-  onDateRangeChange: (val: string) => void;
-  status: string;
-  onStatusChange: (val: string) => void;
-  duration: DurationFilter;
-  onDurationChange: (val: DurationFilter) => void;
-}
+  onStatusChange: (val: TranscriptionJobStatus | null) => void;
+};
 
 export function TranscriptsFilters({
-  searchQuery,
   onSearchChange,
-  dateRange,
-  onDateRangeChange,
-  status,
   onStatusChange,
-  duration,
-  onDurationChange,
 }: TranscriptsFiltersProps) {
-  const dateRangeLabel =
-    dateRange === "all" ? "Date range" : `Date: ${dateRange}`;
+  const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch] = useDebouncedValue(searchQuery, 500);
+  const [status, setStatus] = useState<TranscriptionJobStatus | null>(null);
 
-  const statusLabel =
-    status === "all"
-      ? "Status: All"
-      : `Status: ${status.charAt(0).toUpperCase() + status.slice(1)}`;
+  useEffect(() => {
+    onSearchChange(debouncedSearch);
+  }, [debouncedSearch, onSearchChange]);
 
-  // TODO: put this in a constant and write actual types for it
-  const durationOptions: { label: string; value: DurationFilter }[] = [
-    { label: "All", value: "all" },
-    { label: "<5 min", value: "under5" },
-    { label: "5-30", value: "fiveTo30" },
-    { label: "30-60", value: "thirtyTo60" },
-    { label: "60+", value: "over60" },
-  ];
+  const handleStatusChange = (newStatus: TranscriptionJobStatus | null) => {
+    setStatus(newStatus);
+    onStatusChange(newStatus);
+  };
 
   return (
     <Group justify="space-between" align="center" gap="md" wrap="wrap">
@@ -49,7 +38,7 @@ export function TranscriptsFilters({
         <TextInput
           placeholder="Search by file name..."
           value={searchQuery}
-          onChange={(e) => onSearchChange(e.currentTarget.value)}
+          onChange={(e) => setSearchQuery(e.currentTarget.value)}
           leftSection={
             <SearchIcon size={14} color="var(--mantine-color-slate-4)" />
           }
@@ -71,12 +60,11 @@ export function TranscriptsFilters({
           style={{ width: "100%", maxWidth: 250 }}
         />
 
-        {/* //TODO: use an enum for this */}
         <Menu shadow="md" width={180}>
           <Menu.Target>
             <button className={classes.filterButton}>
               <Text span truncate size="sm">
-                {dateRangeLabel}
+                {status === null ? "All" : TranscriptionStatusLabels[status]}
               </Text>
               <ChevronDownIcon
                 size={14}
@@ -86,77 +74,28 @@ export function TranscriptsFilters({
             </button>
           </Menu.Target>
           <Menu.Dropdown>
-            <Menu.Item onClick={() => onDateRangeChange("all")}>
-              All Dates
-            </Menu.Item>
-            <Menu.Item onClick={() => onDateRangeChange("Last 7 Days")}>
-              Last 7 Days
-            </Menu.Item>
-            <Menu.Item onClick={() => onDateRangeChange("Last 30 Days")}>
-              Last 30 Days
-            </Menu.Item>
-          </Menu.Dropdown>
-        </Menu>
-
-        {/* //TODO: use an enum for this */}
-        <Menu shadow="md" width={180}>
-          <Menu.Target>
-            <button className={classes.filterButton}>
-              <Text span truncate size="sm">
-                {statusLabel}
-              </Text>
-              <ChevronDownIcon
-                size={14}
-                color="var(--mantine-color-slate-4)"
-                style={{ flexShrink: 0 }}
-              />
-            </button>
-          </Menu.Target>
-          <Menu.Dropdown>
-            <Menu.Item onClick={() => onStatusChange("all")}>
-              All Statuses
-            </Menu.Item>
-            <Menu.Item onClick={() => onStatusChange("completed")}>
+            <Menu.Item onClick={() => handleStatusChange(null)}>All</Menu.Item>
+            <Menu.Item
+              onClick={() =>
+                handleStatusChange(TranscriptionJobStatus.Completed)
+              }
+            >
               Completed
             </Menu.Item>
-            <Menu.Item onClick={() => onStatusChange("processing")}>
+            <Menu.Item
+              onClick={() =>
+                handleStatusChange(TranscriptionJobStatus.Processing)
+              }
+            >
               Processing
             </Menu.Item>
-            <Menu.Item onClick={() => onStatusChange("failed")}>
+            <Menu.Item
+              onClick={() => handleStatusChange(TranscriptionJobStatus.Failed)}
+            >
               Failed
             </Menu.Item>
           </Menu.Dropdown>
         </Menu>
-
-        <Box
-          display="flex"
-          style={{
-            alignItems: "center",
-            gap: "6px",
-          }}
-        >
-          <Text
-            fz="0.65rem"
-            fw={700}
-            lts=" 0.08em"
-            c="slate.4"
-            tt="uppercase"
-            mr="4px"
-          >
-            Duration
-          </Text>
-          {durationOptions.map((opt) => (
-            <button
-              key={opt.value}
-              className={`${classes.durationPill} ${
-                duration === opt.value ? classes.durationPillActive : ""
-              }`}
-              onClick={() => onDurationChange(opt.value)}
-            >
-              {opt.label}
-            </button>
-          ))}
-        </Box>
       </Group>
     </Group>
   );

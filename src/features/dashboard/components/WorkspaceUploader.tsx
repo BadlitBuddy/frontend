@@ -24,27 +24,18 @@ import {
   AudioLinesIcon,
   AudioLinesIconHandle,
 } from "@/components/icons/AudioLinesIcon";
+import { useFFmpeg, isWavFile } from "@/hooks/useFFmpeg";
 
-const ACCEPTED_MIME_TYPES = [
-  "audio/*",
-  "video/*",
-  "audio/wav",
-  "audio/webm",
-  "audio/flac",
-  "audio/mpeg",
-  "audio/mp4",
-  "audio/x-m4a",
-  "audio/ogg",
-  "video/webm",
-  "video/mp4",
-];
+const ACCEPTED_MIME_TYPES = ["audio/*", "video/*"];
 
 export function WorkspaceUploader() {
   const queryClient = useQueryClient();
   const { addNotification } = useNotifications();
   const [pendingFile, setPendingFile] = useState<File | null>(null);
+  const [isConverting, setIsConverting] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
 
+  const { convertToWav, progress: conversionProgress } = useFFmpeg();
   const { data, error, start, stop } = useGetTranscriptEventsNative();
 
   useEffect(() => {
@@ -89,7 +80,6 @@ export function WorkspaceUploader() {
           title: "File uploaded successfully",
           message: `Transcription has been initiated for ${pendingFile?.name}.`,
         });
-        setPendingFile(null);
       },
       onError: () => {
         addNotification({
@@ -102,36 +92,65 @@ export function WorkspaceUploader() {
     },
   });
 
-  const uploadFileMutation = useGetPresignedUrl({
-    mutationConfig: {
-      onSuccess: async (data) => {
-        if (!pendingFile) return;
-        setIsProcessing(true);
+  const uploadFileMutation = useGetPresignedUrl();
 
-        await uploadToPresignedUrlMutation.mutateAsync({
-          presignedUrl: data.url,
-          file: pendingFile,
-        });
-
-        transcribeFileMutation.mutate({
-          data: {
-            unprocessedObjectKey: data.objectKey,
-            id: null,
-          },
-        });
-      },
-    },
-  });
-
-  const handleFileUpload = (file: File): void => {
+  const handleFileUpload = async (file: File) => {
     setPendingFile(file);
-    uploadFileMutation.mutate({
-      data: { fileName: file.name, fileSize: file.size },
-    });
+
+    try {
+      let targetFile = file;
+
+      if (!isWavFile(file)) {
+        setIsConverting(true);
+        targetFile = await convertToWav(file);
+        setIsConverting(false);
+        setPendingFile(targetFile);
+      }
+
+      setIsProcessing(true);
+
+      const presignedData = await uploadFileMutation.mutateAsync({
+        data: { fileName: targetFile.name, fileSize: targetFile.size },
+      });
+
+      await uploadToPresignedUrlMutation.mutateAsync({
+        presignedUrl: presignedData.url,
+        file: targetFile,
+      });
+
+      transcribeFileMutation.mutate({
+        data: {
+          unprocessedObjectKey: presignedData.objectKey,
+          id: null,
+        },
+      });
+    } catch (err) {
+      setIsConverting(false);
+      setIsProcessing(false);
+      setPendingFile(null);
+      const message =
+        err instanceof Error
+          ? err.message
+          : "Something went wrong. Please try again.";
+      addNotification({
+        type: "error",
+        title: "Processing failed",
+        message,
+      });
+    }
   };
 
   const isUploading =
     uploadFileMutation.isPending || uploadToPresignedUrlMutation.isPending;
+
+  if (isConverting) {
+    return (
+      <ConvertingView
+        fileName={pendingFile?.name}
+        progress={conversionProgress}
+      />
+    );
+  }
 
   if (isUploading) {
     return (
@@ -149,7 +168,7 @@ export function WorkspaceUploader() {
   return (
     <UploaderView
       handleFileUpload={handleFileUpload}
-      isUploading={isUploading}
+      isUploading={isUploading || isConverting}
     />
   );
 }
@@ -166,6 +185,49 @@ const pseudoProcessingLabels = [
   "Running Ai models",
   "Setting up the workspace",
 ];
+
+type ConvertingViewProps = {
+  fileName?: string;
+  progress?: number;
+};
+
+function ConvertingView({ fileName, progress = 0 }: ConvertingViewProps) {
+  const isIndeterminate = progress === undefined;
+  const displayProgress = isIndeterminate ? 100 : progress > 100 ? 0 : progress;
+
+  return (
+    <Stack
+      align="center"
+      justify="center"
+      gap="sm"
+      px="xl"
+      py="lg"
+      bd="1px solid slate.2"
+      bdrs="sm"
+    >
+      {fileName && (
+        <Text fw={700} c="slate.9" size="sm">
+          {fileName}
+        </Text>
+      )}
+      <Progress
+        value={displayProgress}
+        color="slate.9"
+        size="md"
+        radius="xl"
+        striped={isIndeterminate}
+        animated={isIndeterminate}
+        w="100%"
+        transitionDuration={200}
+      />
+      <Text size="sm" c="slate.5">
+        {isIndeterminate
+          ? "Preparing file for upload…"
+          : `Optimizing & converting audio to WAV... ${displayProgress}%`}
+      </Text>
+    </Stack>
+  );
+}
 
 type TranscriptionInProgressViewProps = {
   fileName?: string;
@@ -269,7 +331,7 @@ function ProgressView({ fileName, progress }: ProgressViewProps) {
       )}
       <Progress
         value={displayProgress}
-        color="blue"
+        color="slate.9"
         size="md"
         radius="xl"
         striped={isIndeterminate}
@@ -344,8 +406,16 @@ function UploaderView({ handleFileUpload, isUploading }: UploaderView) {
             Select audio or video
           </Title>
           <Text size="sm" c="slate.5" ta="center">
-            Drag and drop files here, or click to browse (wav, webm, flac, mp3,
-            mpeg, mpga, mp4, m4a, ogg )
+            Drag and drop files here, or click to browse (wav, mp3, mp4, mov,
+            m4a, flac, webm, and
+            <span
+              className="tooltip tooltip-accent tooltip-right text-ws-primary underline"
+              data-tip=".ogg, .opus, .wma, .avi, .aiff, .alac, .ape,
+                .pcm, .mkv, .wmv, .flv, .mpeg, .3gp, .m4v, .aac"
+            >
+              15 more.
+            </span>
+            )
           </Text>
         </Stack>
 

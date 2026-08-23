@@ -14,5 +14,14 @@ export const TranscriptionJobStatus = {
   Failed: 4,
 } as const;
 
+export const TranscriptionStatusLabels: Record<TranscriptionJobStatus, string> =
+  {
+    [TranscriptionJobStatus.Uploaded]: "Uploaded",
+    [TranscriptionJobStatus.Processing]: "Processing",
+    [TranscriptionJobStatus.Completed]: "Completed",
+    [TranscriptionJobStatus.Canceled]: "Canceled",
+    [TranscriptionJobStatus.Failed]: "Failed",
+  } as const;
+
 export type TranscriptionJobStatus =
   (typeof TranscriptionJobStatus)[keyof typeof TranscriptionJobStatus];

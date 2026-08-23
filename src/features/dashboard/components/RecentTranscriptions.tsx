@@ -14,7 +14,7 @@ import Link from "next/link";
 import { useGetTranscripts } from "@/features/transcripts/api/get-transcripts";
 import { TranscriptionJobStatus } from "../types";
 import classes from "../styles/RecentTranscriptions.module.css";
-import { DownloadMenu } from "@/components/DownloadMenu";
+import { DownloadMenu } from "@/features/transcripts/components/DownloadMenu";
 
 function StatusBadge({ status }: { status: TranscriptionJobStatus }) {
   if (status === TranscriptionJobStatus.Completed) {

@@ -25,9 +25,11 @@ import {
 } from "@/components/icons/AudioLinesIcon";
 import { useGetTranscriptEventsNative } from "@/features/transcripts/api/get-transcript-events";
 import { useTranscriptionDownload } from "@/features/transcripts/hooks/useTranscriptionDownload";
+import { useFFmpeg, isWavFile } from "@/hooks/useFFmpeg";
 
 type UploadState =
   | "idle"
+  | "converting"
   | "uploading"
   | "transcribing"
   | "completed"
@@ -46,8 +48,10 @@ function UploadZoneContent() {
   const [errorMessage, setErrorMessage] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const { convertToWav, progress: conversionProgress } = useFFmpeg();
   const { mutateAsync: getPresignedUrl } = useGetPresignedUrl();
-  const { mutateAsync: uploadToS3, progress } = useUploadFileToPresignedUrl();
+  const { mutateAsync: uploadToS3, progress: uploadProgress } =
+    useUploadFileToPresignedUrl();
   const { mutateAsync: transcribeFile } = useTranscribeFile();
 
   const {
@@ -59,14 +63,24 @@ function UploadZoneContent() {
 
   const handleFileUpload = async (file: File) => {
     setErrorMessage("");
-    setState("uploading");
 
     try {
+      let targetFile = file;
+
+      if (!isWavFile(file)) {
+        setState("converting");
+        setFileMeta({ name: file.name, audioLength: "" });
+        targetFile = await convertToWav(file);
+      }
+
+      setState("uploading");
+      setFileMeta({ name: targetFile.name, audioLength: "" });
+
       const { url, objectKey } = await getPresignedUrl({
-        data: { fileName: file.name, fileSize: file.size },
+        data: { fileName: targetFile.name, fileSize: targetFile.size },
       });
 
-      await uploadToS3({ presignedUrl: url, file });
+      await uploadToS3({ presignedUrl: url, file: targetFile });
 
       setState("transcribing");
       const result = await transcribeFile({
@@ -74,7 +88,7 @@ function UploadZoneContent() {
       });
 
       setFileMeta({
-        name: file.name,
+        name: targetFile.name,
         audioLength: result.duration.slice(0, 8),
       });
       setTranscriptId(result.id);
@@ -153,8 +167,18 @@ function UploadZoneContent() {
         />
       )}
 
+      {state === "converting" && (
+        <ConvertingStateView
+          fileName={fileMeta.name}
+          progress={conversionProgress}
+        />
+      )}
+
       {state === "uploading" && (
-        <UploadingStateView fileName={fileMeta.name} progress={progress} />
+        <UploadingStateView
+          fileName={fileMeta.name}
+          progress={uploadProgress}
+        />
       )}
 
       {state === "transcribing" && (
@@ -240,10 +264,51 @@ function IdleStateView({
               Drag a file or click to upload — no sign-up required
             </p>
             <p className="text-xs text-ws-text-muted mt-0.5">
-              Maximum of 130mb per file, no account required.
-              (.wav, .mp3, .mp4, .m4a, .mov, .avi, .flv, .wmv)
+              Max 130MB per file. Supports .mp3, .wav, .flac, .mp4, .mov
+              <span
+                className="tooltip tooltip-accent tooltip-right text-ws-primary underline"
+                data-tip=".ogg, .opus, .wma, .avi, .webm, .aiff, .alac, .ape,
+                .pcm, .mkv, .wmv, .flv, .mpeg, .3gp, .m4v, .m4a, .aac"
+              >
+                , and 17 more.
+              </span>
             </p>
           </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+type ConvertingStateViewProps = {
+  fileName: string;
+  progress: number;
+};
+
+function ConvertingStateView({ fileName, progress }: ConvertingStateViewProps) {
+  return (
+    <div className="p-6 bg-ws-surface border border-ws-border rounded-lg shadow-sm w-full">
+      <div className="flex items-center gap-3 mb-4">
+        <CircleLoaderIcon size={28} />
+        <div>
+          <p className="font-semibold text-sm text-ws-text-primary truncate max-w-62.5">
+            {fileName}
+          </p>
+          <p className="text-xs text-ws-text-muted">
+            Optimizing & converting audio to WAV...
+          </p>
+        </div>
+      </div>
+      <div>
+        <div className="flex justify-between text-xs font-medium text-ws-text-secondary mb-1">
+          <span>Converting...</span>
+          <span>{progress}%</span>
+        </div>
+        <div className="w-full bg-ws-background rounded-full h-2">
+          <div
+            className="bg-ws-primary h-2 rounded-full transition-all duration-200"
+            style={{ width: `${progress}%` }}
+          />
         </div>
       </div>
     </div>

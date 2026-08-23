@@ -11,13 +11,6 @@ export interface Transcript {
   status: TranscriptStatus;
 }
 
-export type DurationFilter =
-  | "all"
-  | "under5"
-  | "fiveTo30"
-  | "thirtyTo60"
-  | "over60";
-
 export type TranscriptionTask = "transcribe" | "translate";
 
 export const TranscriptionTask = {

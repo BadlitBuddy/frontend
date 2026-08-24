@@ -1,21 +1,19 @@
 "use client";
 
 import { Box, Button, Group, Text } from "@mantine/core";
-import { FolderDownIcon, Trash2Icon } from "lucide-react";
+import { FolderDownIcon } from "lucide-react";
 import classes from "../styles/SelectionBanner.module.css";
 
 interface SelectionBannerProps {
   selectedCount: number;
   onClear: () => void;
   onDownload: () => void;
-  onDelete: () => void;
 }
 
 export function SelectionBanner({
   selectedCount,
   onClear,
   onDownload,
-  onDelete,
 }: SelectionBannerProps) {
   if (selectedCount === 0) return null;
 
@@ -49,18 +47,6 @@ export function SelectionBanner({
           onClick={onDownload}
         >
           Download as ZIP
-        </Button>
-
-        <Button
-          variant="filled"
-          size="sm"
-          fw="600"
-          c="white"
-          className={classes.deleteButton}
-          leftSection={<Trash2Icon size={15} />}
-          onClick={onDelete}
-        >
-          Delete
         </Button>
       </Group>
     </Box>

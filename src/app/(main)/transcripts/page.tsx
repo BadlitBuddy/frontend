@@ -79,19 +79,6 @@ export default function TranscriptsPage() {
     alert(`Downloading ${count} files as ZIP:\n\n${selectedNames}`);
   };
 
-  const handleDeleteSelected = () => {
-    const count = selectedIds.size;
-    if (
-      confirm(
-        `Are you sure you want to delete the ${count} selected transcript${
-          count === 1 ? "" : "s"
-        }?`,
-      )
-    ) {
-      setSelectedIds(new Set());
-    }
-  };
-
   return (
     <MainPageContainer>
       <Stack gap="xl">
@@ -125,7 +112,6 @@ export default function TranscriptsPage() {
           onToggleSelect={handleToggleSelect}
           onToggleSelectAll={handleToggleSelectAll}
           onDownloadSelected={handleDownloadSelected}
-          onDeleteSelected={handleDeleteSelected}
           onClearSelection={handleClearSelection}
           currentPage={currentPage}
           onPageChange={setCurrentPage}

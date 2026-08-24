@@ -24,7 +24,6 @@ interface TranscriptsTableProps {
   onToggleSelect: (id: string) => void;
   onToggleSelectAll: () => void;
   onDownloadSelected: () => void;
-  onDeleteSelected: () => void;
   onClearSelection: () => void;
   currentPage: number;
   onPageChange: (page: number) => void;
@@ -40,7 +39,6 @@ export function TranscriptsTable({
   onToggleSelect,
   onToggleSelectAll,
   onDownloadSelected,
-  onDeleteSelected,
   onClearSelection,
   currentPage,
   onPageChange,
@@ -60,7 +58,6 @@ export function TranscriptsTable({
         selectedCount={selectedIds.size}
         onClear={onClearSelection}
         onDownload={onDownloadSelected}
-        onDelete={onDeleteSelected}
       />
 
       <Table

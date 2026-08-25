@@ -1,127 +1,46 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useCallback, useState } from "react";
 import { Box, Stack, Text, Title } from "@mantine/core";
 import { TranscriptsFilters } from "@/features/transcripts/components/TranscriptsFilters";
 import { TranscriptsTable } from "@/features/transcripts/components/TranscriptsTable";
-import { MOCK_TRANSCRIPTS } from "@/features/transcripts/data/mockTranscripts";
-import { DurationFilter, Transcript } from "@/features/transcripts/types";
+import { useGetTranscripts } from "@/features/transcripts/api/get-transcripts";
+import { TranscriptionJobStatus } from "@/features/dashboard/types";
 import { MainPageContainer } from "../_components/MainPageContainer";
-
-// Helper to parse duration (MM:SS or HH:MM:SS) to seconds
-function parseDurationToSeconds(duration: string): number {
-  const parts = duration.split(":").map(Number);
-  if (parts.length === 3) {
-    const [h = 0, m = 0, s = 0] = parts;
-    return h * 3600 + m * 60 + s;
-  }
-  if (parts.length === 2) {
-    const [m = 0, s = 0] = parts;
-    return m * 60 + s;
-  }
-  return parts[0] ?? 0;
-}
-
-// Preset selection to match the mockup image state on first load
-const INITIAL_SELECTED_IDS = new Set<string>(["3", "4"]);
+import { useBulkDownloadZip } from "@/features/transcripts/hooks/useBulkDownloadZip";
+import { TranscriptionExportFormat } from "@/features/transcripts/helpers/transcriptionExporter";
 
 export default function TranscriptsPage() {
-  // State for dynamic mock data list (allows deleting items)
-  const [transcriptsList, setTranscriptsList] =
-    useState<Transcript[]>(MOCK_TRANSCRIPTS);
+  const [searchQuery, setSearchQuery] = useState<string | null>("");
+  const [status, setStatus] = useState<TranscriptionJobStatus | null>(null);
 
-  // Filter States
-  const [searchQuery, setSearchQuery] = useState("");
-  const [dateRange, setDateRange] = useState("all");
-  const [status, setStatus] = useState("all");
-  const [duration, setDuration] = useState<DurationFilter>("all");
-
-  // Selection & Pagination States
-  const [selectedIds, setSelectedIds] =
-    useState<Set<string>>(INITIAL_SELECTED_IDS);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
 
-  const [prevFilters, setPrevFilters] = useState({
-    searchQuery,
-    dateRange,
-    status,
-    duration,
+  const { downloadZip, isDownloadingZip } = useBulkDownloadZip();
+
+  const { data, isLoading, isFetching } = useGetTranscripts({
+    params: {
+      page: currentPage,
+      limit: pageSize,
+      status: status ?? undefined,
+      fileName: searchQuery ? searchQuery : undefined,
+    },
   });
 
-  if (
-    prevFilters.searchQuery !== searchQuery ||
-    prevFilters.dateRange !== dateRange ||
-    prevFilters.status !== status ||
-    prevFilters.duration !== duration
-  ) {
-    setPrevFilters({ searchQuery, dateRange, status, duration });
+  const onSetSearchQuery = useCallback((query: string) => {
+    setSearchQuery(query);
     setCurrentPage(1);
-  }
+  }, []);
 
-  // Filtering Logics
-  const filteredTranscripts = useMemo(() => {
-    return transcriptsList.filter((item) => {
-      // 1. Search Query
-      if (
-        searchQuery.trim() !== "" &&
-        !item.fileName.toLowerCase().includes(searchQuery.toLowerCase())
-      ) {
-        return false;
-      }
+  const onSetStatus = useCallback((status: TranscriptionJobStatus | null) => {
+    setStatus(status);
+    setCurrentPage(1);
+  }, []);
 
-      // 2. Status
-      if (status !== "all" && item.status !== status) {
-        return false;
-      }
-
-      // 3. Duration
-      if (duration !== "all") {
-        const secs = parseDurationToSeconds(item.duration);
-        if (duration === "under5" && secs >= 300) return false;
-        if (duration === "fiveTo30" && (secs < 300 || secs > 1800))
-          return false;
-        if (duration === "thirtyTo60" && (secs <= 1800 || secs > 3600))
-          return false;
-        if (duration === "over60" && secs <= 3600) return false;
-      }
-
-      // 4. Date Range (Mocked filters based on the dataset dates)
-      if (dateRange !== "all") {
-        if (dateRange === "Last 7 Days") {
-          // Oct 18 to Oct 24 in our mock dataset
-          const datePart = item.date.split(" ")[1];
-          const day = datePart ? parseInt(datePart, 10) : 0;
-          if (!item.date.includes("Oct") || day < 18 || day > 24) return false;
-        } else if (dateRange === "Last 30 Days") {
-          // Show all October dates
-          if (!item.date.includes("Oct")) return false;
-        } else {
-          // Specific Month Selection, e.g., "October 2024" -> contains "Oct"
-          const firstWord = dateRange.split(" ")[0];
-          const monthQuery = firstWord ? firstWord.substring(0, 3) : ""; // "Oct" or "Sep"
-          if (!item.date.includes(monthQuery)) return false;
-        }
-      }
-
-      return true;
-    });
-  }, [transcriptsList, searchQuery, status, duration, dateRange]);
-
-  const paginatedTranscripts = useMemo(() => {
-    const start = (currentPage - 1) * pageSize;
-    return filteredTranscripts.slice(start, start + pageSize);
-  }, [filteredTranscripts, currentPage]);
-
-  const validSelectedIds = useMemo(() => {
-    const next = new Set<string>();
-    selectedIds.forEach((id) => {
-      if (transcriptsList.some((t) => t.id === id)) {
-        next.add(id);
-      }
-    });
-    return next;
-  }, [selectedIds, transcriptsList]);
+  const transcripts = data?.items ?? [];
+  const totalCount = data?.totalCount ?? 0;
 
   const handleToggleSelect = (id: string) => {
     setSelectedIds((prev) => {
@@ -135,55 +54,30 @@ export default function TranscriptsPage() {
     });
   };
 
-  // TODO:
   const handleToggleSelectAll = () => {
-    const pageIds = paginatedTranscripts.map((t) => t.id);
-    const areAllPageIdsSelected = pageIds.every((id) =>
-      validSelectedIds.has(id),
-    );
+    const pageIds = transcripts.map((t) => t.id);
+    const areAllPageIdsSelected =
+      pageIds.length > 0 && pageIds.every((id) => selectedIds.has(id));
 
     setSelectedIds((prev) => {
       const next = new Set(prev);
       if (areAllPageIdsSelected) {
-        // Deselect all items on the current page
         pageIds.forEach((id) => next.delete(id));
       } else {
-        // Select all items on the current page
         pageIds.forEach((id) => next.add(id));
       }
       return next;
     });
   };
 
-  // TODO: Implement actual logic
   const handleClearSelection = () => {
     setSelectedIds(new Set());
   };
 
-  // TODO: Implement actual logic
-  const handleDownloadSelected = () => {
-    const count = validSelectedIds.size;
-    const selectedNames = transcriptsList
-      .filter((t) => validSelectedIds.has(t.id))
-      .map((t) => t.fileName)
-      .join("\n");
-    alert(`Downloading ${count} files as ZIP:\n\n${selectedNames}`);
-  };
-
-  const handleDeleteSelected = () => {
-    const count = validSelectedIds.size;
-    if (
-      confirm(
-        `Are you sure you want to delete the ${count} selected transcript${
-          count === 1 ? "" : "s"
-        }?`,
-      )
-    ) {
-      setTranscriptsList((prev) =>
-        prev.filter((t) => !validSelectedIds.has(t.id)),
-      );
-      setSelectedIds(new Set());
-    }
+  const handleDownloadSelected = async (format: TranscriptionExportFormat) => {
+    const ids = Array.from(selectedIds);
+    await downloadZip(ids, format);
+    setSelectedIds(new Set());
   };
 
   return (
@@ -207,27 +101,23 @@ export default function TranscriptsPage() {
         </Box>
 
         <TranscriptsFilters
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-          dateRange={dateRange}
-          onDateRangeChange={setDateRange}
-          status={status}
-          onStatusChange={setStatus}
-          duration={duration}
-          onDurationChange={setDuration}
+          onSearchChange={onSetSearchQuery}
+          onStatusChange={onSetStatus}
         />
 
         <TranscriptsTable
-          transcripts={paginatedTranscripts}
-          selectedIds={validSelectedIds}
+          transcripts={transcripts}
+          isLoading={isLoading}
+          isFetching={isFetching}
+          selectedIds={selectedIds}
           onToggleSelect={handleToggleSelect}
           onToggleSelectAll={handleToggleSelectAll}
           onDownloadSelected={handleDownloadSelected}
-          onDeleteSelected={handleDeleteSelected}
           onClearSelection={handleClearSelection}
+          isDownloadingZip={isDownloadingZip}
           currentPage={currentPage}
           onPageChange={setCurrentPage}
-          totalCount={filteredTranscripts.length}
+          totalCount={totalCount}
           pageSize={pageSize}
         />
       </Stack>

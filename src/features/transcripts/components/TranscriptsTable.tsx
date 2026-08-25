@@ -1,176 +1,48 @@
 "use client";
 
 import {
-  Anchor,
-  Badge,
   Box,
   Checkbox,
   Group,
   Pagination,
+  Skeleton,
   Table,
   Text,
-  UnstyledButton,
 } from "@mantine/core";
-import { AudioWaveformIcon, DownloadIcon } from "lucide-react";
-import Link from "next/link";
+import { AudioWaveformIcon } from "lucide-react";
 import { SelectionBanner } from "./SelectionBanner";
-import { Transcript, TranscriptStatus } from "../types";
+import { TranscriptDto } from "../api/get-transcripts";
 import classes from "../styles/Transcripts.module.css";
+import { TranscriptStatusBadge } from "./TranscriptStatusBadge";
+import { RowAction } from "./TranscriptRowAction";
+import { TranscriptionExportFormat } from "../helpers/transcriptionExporter";
 
 interface TranscriptsTableProps {
-  transcripts: Transcript[];
+  transcripts: TranscriptDto[];
+  isLoading?: boolean;
+  isFetching?: boolean;
   selectedIds: Set<string>;
   onToggleSelect: (id: string) => void;
   onToggleSelectAll: () => void;
-  onDownloadSelected: () => void;
-  onDeleteSelected: () => void;
+  onDownloadSelected: (format: TranscriptionExportFormat) => void;
   onClearSelection: () => void;
+  isDownloadingZip?: boolean;
   currentPage: number;
   onPageChange: (page: number) => void;
   totalCount: number;
   pageSize: number;
 }
 
-function StatusBadge({ status }: { status: TranscriptStatus }) {
-  if (status === "completed") {
-    return (
-      <Badge
-        variant="dot"
-        size="sm"
-        color="slate.6"
-        bg="slate.1"
-        c="slate.7"
-        bd="1px solid slate.2"
-        tt="uppercase"
-        fw={700}
-        fz="0.65rem"
-      >
-        Completed
-      </Badge>
-    );
-  }
-
-  if (status === "processing") {
-    return (
-      <Badge
-        variant="dot"
-        size="sm"
-        color="blue.6"
-        bg="blue.0"
-        c="blue.7"
-        bd="1px solid blue.2"
-        tt="uppercase"
-        lts="0.06em"
-        fw={700}
-        fz="0.65rem"
-      >
-        Processing
-      </Badge>
-    );
-  }
-
-  return (
-    <Badge
-      variant="dot"
-      size="sm"
-      color="error.6"
-      bg="error.0"
-      c="error.7"
-      bd="1px solid error.2"
-      tt="uppercase"
-      lts="0.06em"
-      fw={700}
-      fz="0.65rem"
-    >
-      Failed
-    </Badge>
-  );
-}
-
-// TODO: Implement with actual functionality
-function RowAction({
-  transcript,
-  onReTranscribe,
-}: {
-  transcript: Transcript;
-  onReTranscribe: (id: string) => void;
-}) {
-  if (transcript.status === "processing") {
-    return (
-      <Text size="xs" fw={600} c="slate.4" lts="0.04em" tt="uppercase" pr="md">
-        Please wait…
-      </Text>
-    );
-  }
-
-  if (transcript.status === "failed") {
-    return (
-      <UnstyledButton
-        onClick={() => onReTranscribe(transcript.id)}
-        c="error.7"
-        fw={700}
-        fz="0.75rem"
-        lts="0.04em"
-        style={{
-          cursor: "pointer",
-        }}
-        onMouseEnter={(e) =>
-          (e.currentTarget.style.textDecoration = "underline")
-        }
-        onMouseLeave={(e) => (e.currentTarget.style.textDecoration = "none")}
-      >
-        Re-transcribe
-      </UnstyledButton>
-    );
-  }
-
-  return (
-    <Group gap={8} justify="flex-end" pr="xs">
-      <Anchor
-        component={Link}
-        href={`/transcripts/${transcript.id}`}
-        size="xs"
-        fw={700}
-        underline="hover"
-        c="slate.9"
-        lts="0.04em"
-        tt="uppercase"
-      >
-        View
-      </Anchor>
-      <Box
-        component="button"
-        aria-label={`Download ${transcript.fileName}`}
-        bg="none"
-        bd="none"
-        p={0}
-        display="flex"
-        c="slate.4"
-        style={{
-          cursor: "pointer",
-          alignItems: "center",
-        }}
-        onMouseEnter={(e) =>
-          (e.currentTarget.style.color = "var(--mantine-color-slate-7)")
-        }
-        onMouseLeave={(e) =>
-          (e.currentTarget.style.color = "var(--mantine-color-slate-4)")
-        }
-      >
-        <DownloadIcon size={14} />
-      </Box>
-    </Group>
-  );
-}
-
 export function TranscriptsTable({
   transcripts,
+  isLoading = false,
+  isFetching = false,
   selectedIds,
   onToggleSelect,
   onToggleSelectAll,
   onDownloadSelected,
-  onDeleteSelected,
   onClearSelection,
+  isDownloadingZip = false,
   currentPage,
   onPageChange,
   totalCount,
@@ -183,24 +55,23 @@ export function TranscriptsTable({
   const isAllSelected =
     transcripts.length > 0 && transcripts.every((t) => selectedIds.has(t.id));
 
-  const handleReTranscribe = (id: string) => {
-    // TODO: Implement actual re-transcription logic here
-    alert(`Re-transcribing transcript ${id}...`);
-  };
-
   return (
     <Box className={classes.tableCard}>
       <SelectionBanner
         selectedCount={selectedIds.size}
         onClear={onClearSelection}
         onDownload={onDownloadSelected}
-        onDelete={onDeleteSelected}
+        isDownloading={isDownloadingZip}
       />
 
       <Table
         highlightOnHover
         verticalSpacing="sm"
         horizontalSpacing="md"
+        style={{
+          opacity: isFetching && !isLoading ? 0.6 : 1,
+          transition: "opacity 150ms",
+        }}
         styles={{
           tr: {
             borderBottom: "1px solid var(--mantine-color-slate-2)",
@@ -222,6 +93,7 @@ export function TranscriptsTable({
                   !isAllSelected
                 }
                 onChange={onToggleSelectAll}
+                disabled={isLoading || transcripts.length === 0}
               />
             </Table.Th>
             <Table.Th className={classes.tableHeader}>File Name</Table.Th>
@@ -235,17 +107,53 @@ export function TranscriptsTable({
         </Table.Thead>
 
         <Table.Tbody>
-          {transcripts.length === 0 ? (
+          {isLoading ? (
+            Array.from({ length: pageSize > 5 ? 5 : pageSize }).map(
+              (_, index) => (
+                <Table.Tr key={index}>
+                  <Table.Td>
+                    <Skeleton height={18} width={18} radius="xs" />
+                  </Table.Td>
+                  <Table.Td>
+                    <Skeleton height={20} radius="sm" />
+                  </Table.Td>
+                  <Table.Td>
+                    <Skeleton height={20} radius="sm" />
+                  </Table.Td>
+                  <Table.Td>
+                    <Skeleton height={20} radius="sm" />
+                  </Table.Td>
+                  <Table.Td>
+                    <Skeleton height={20} radius="sm" />
+                  </Table.Td>
+                  <Table.Td>
+                    <Skeleton height={20} radius="sm" />
+                  </Table.Td>
+                </Table.Tr>
+              ),
+            )
+          ) : transcripts.length === 0 ? (
             <Table.Tr style={{ cursor: "default" }}>
-              <Table.Td colSpan={6} ta="center" pb="2rem">
+              <Table.Td colSpan={6} ta="center" py="2rem">
                 <Text size="sm" c="slate.4" fw={500}>
-                  No transcripts found matching your search and filters.
+                  No transcripts found.
                 </Text>
               </Table.Td>
             </Table.Tr>
           ) : (
             transcripts.map((transcript) => {
               const isChecked = selectedIds.has(transcript.id);
+              const createdAt = transcript.createdAt
+                ? new Date(transcript.createdAt).toLocaleDateString(undefined, {
+                    year: "numeric",
+                    month: "short",
+                    day: "numeric",
+                  })
+                : "—";
+              const duration = transcript.duration
+                ? transcript.duration.substring(0, 8)
+                : "00:00:00";
+
               return (
                 <Table.Tr key={transcript.id} style={{ cursor: "default" }}>
                   <Table.Td
@@ -267,7 +175,7 @@ export function TranscriptsTable({
                         size="sm"
                         fw={500}
                         c="slate.8"
-                        ff="monospace"
+                        ff="var(--font-jetbrains-mono), monospace"
                         fz="0.8rem"
                       >
                         {transcript.fileName}
@@ -277,24 +185,30 @@ export function TranscriptsTable({
 
                   <Table.Td>
                     <Text size="sm" c="slate.5">
-                      {transcript.date}
+                      {createdAt}
                     </Text>
                   </Table.Td>
 
                   <Table.Td>
-                    <Text size="sm" c="slate.6" ff="monospace" fz="0.8rem">
-                      {transcript.duration}
+                    <Text
+                      size="sm"
+                      c="slate.6"
+                      ff="var(--font-jetbrains-mono), monospace"
+                      fz="0.82rem"
+                    >
+                      {duration}
                     </Text>
                   </Table.Td>
 
                   <Table.Td>
-                    <StatusBadge status={transcript.status} />
+                    <TranscriptStatusBadge status={transcript.jobStatus} />
                   </Table.Td>
 
                   <Table.Td ta="right">
                     <RowAction
-                      transcript={transcript}
-                      onReTranscribe={handleReTranscribe}
+                      transcriptId={transcript.id}
+                      fileName={transcript.fileName}
+                      status={transcript.jobStatus}
                     />
                   </Table.Td>
                 </Table.Tr>
@@ -304,7 +218,7 @@ export function TranscriptsTable({
         </Table.Tbody>
       </Table>
 
-      {totalPages > 0 && (
+      {!isLoading && totalPages > 0 && (
         <Group
           justify="space-between"
           px="md"

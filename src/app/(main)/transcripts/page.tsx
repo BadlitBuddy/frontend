@@ -7,6 +7,8 @@ import { TranscriptsTable } from "@/features/transcripts/components/TranscriptsT
 import { useGetTranscripts } from "@/features/transcripts/api/get-transcripts";
 import { TranscriptionJobStatus } from "@/features/dashboard/types";
 import { MainPageContainer } from "../_components/MainPageContainer";
+import { useBulkDownloadZip } from "@/features/transcripts/hooks/useBulkDownloadZip";
+import { TranscriptionExportFormat } from "@/features/transcripts/helpers/transcriptionExporter";
 
 export default function TranscriptsPage() {
   const [searchQuery, setSearchQuery] = useState<string | null>("");
@@ -15,6 +17,8 @@ export default function TranscriptsPage() {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
+
+  const { downloadZip, isDownloadingZip } = useBulkDownloadZip();
 
   const { data, isLoading, isFetching } = useGetTranscripts({
     params: {
@@ -70,13 +74,10 @@ export default function TranscriptsPage() {
     setSelectedIds(new Set());
   };
 
-  const handleDownloadSelected = () => {
-    const count = selectedIds.size;
-    const selectedNames = transcripts
-      .filter((t) => selectedIds.has(t.id))
-      .map((t) => t.fileName)
-      .join("\n");
-    alert(`Downloading ${count} files as ZIP:\n\n${selectedNames}`);
+  const handleDownloadSelected = async (format: TranscriptionExportFormat) => {
+    const ids = Array.from(selectedIds);
+    await downloadZip(ids, format);
+    setSelectedIds(new Set());
   };
 
   return (
@@ -113,6 +114,7 @@ export default function TranscriptsPage() {
           onToggleSelectAll={handleToggleSelectAll}
           onDownloadSelected={handleDownloadSelected}
           onClearSelection={handleClearSelection}
+          isDownloadingZip={isDownloadingZip}
           currentPage={currentPage}
           onPageChange={setCurrentPage}
           totalCount={totalCount}

@@ -15,6 +15,7 @@ import { TranscriptDto } from "../api/get-transcripts";
 import classes from "../styles/Transcripts.module.css";
 import { TranscriptStatusBadge } from "./TranscriptStatusBadge";
 import { RowAction } from "./TranscriptRowAction";
+import { TranscriptionExportFormat } from "../helpers/transcriptionExporter";
 
 interface TranscriptsTableProps {
   transcripts: TranscriptDto[];
@@ -23,8 +24,9 @@ interface TranscriptsTableProps {
   selectedIds: Set<string>;
   onToggleSelect: (id: string) => void;
   onToggleSelectAll: () => void;
-  onDownloadSelected: () => void;
+  onDownloadSelected: (format: TranscriptionExportFormat) => void;
   onClearSelection: () => void;
+  isDownloadingZip?: boolean;
   currentPage: number;
   onPageChange: (page: number) => void;
   totalCount: number;
@@ -40,6 +42,7 @@ export function TranscriptsTable({
   onToggleSelectAll,
   onDownloadSelected,
   onClearSelection,
+  isDownloadingZip = false,
   currentPage,
   onPageChange,
   totalCount,
@@ -58,6 +61,7 @@ export function TranscriptsTable({
         selectedCount={selectedIds.size}
         onClear={onClearSelection}
         onDownload={onDownloadSelected}
+        isDownloading={isDownloadingZip}
       />
 
       <Table

@@ -25,6 +25,7 @@ import {
   AudioLinesIconHandle,
 } from "@/components/icons/AudioLinesIcon";
 import { useFFmpeg, isWavFile } from "@/hooks/useFFmpeg";
+import { useOPFS } from "@/hooks/useOPFS";
 
 const ACCEPTED_MIME_TYPES = ["audio/*", "video/*"];
 
@@ -36,6 +37,7 @@ export function WorkspaceUploader() {
   const [isProcessing, setIsProcessing] = useState(false);
 
   const { convertToWav, progress: conversionProgress } = useFFmpeg();
+  const { writeFile } = useOPFS();
   const { data, error, start, stop } = useGetTranscriptEventsNative();
 
   useEffect(() => {
@@ -118,12 +120,17 @@ export function WorkspaceUploader() {
         file: targetFile,
       });
 
-      transcribeFileMutation.mutate({
+      const transcribeResult = await transcribeFileMutation.mutateAsync({
         data: {
           unprocessedObjectKey: presignedData.objectKey,
           id: null,
         },
       });
+
+      await writeFile(
+        `transcriptAudio/${transcribeResult.id}/${targetFile.name}`,
+        targetFile,
+      );
     } catch (err) {
       setIsConverting(false);
       setIsProcessing(false);

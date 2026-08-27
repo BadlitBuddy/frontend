@@ -1,20 +1,17 @@
 "use client";
 
-import { Anchor, Button, Group, Text } from "@mantine/core";
+import { Anchor, Group, Text } from "@mantine/core";
 import Link from "next/link";
-import {
-  ChevronRightIcon,
-  DownloadIcon,
-  MessageSquareIcon,
-  ShareIcon,
-  SparklesIcon,
-} from "lucide-react";
+import { ChevronRightIcon } from "lucide-react";
+import { ParamValue } from "next/dist/server/request/params";
+import { DownloadMenu } from "@/features/transcripts/components/DownloadMenu";
 
 interface ActionBarProps {
   fileName: string;
+  transcriptId: ParamValue;
 }
 
-export default function ActionBar({ fileName }: ActionBarProps) {
+export default function ActionBar({ fileName, transcriptId }: ActionBarProps) {
   return (
     <Group
       justify="space-between"
@@ -37,7 +34,7 @@ export default function ActionBar({ fileName }: ActionBarProps) {
           td="none"
           style={{ transition: "color 100ms ease" }}
         >
-          TranscriptionPro
+          Transcript
         </Anchor>
         <ChevronRightIcon size={12} color="var(--mantine-color-slate-4)" />
         <Text fz="0.8rem" fw={600} c="slate.8" truncate maw={300}>
@@ -46,17 +43,9 @@ export default function ActionBar({ fileName }: ActionBarProps) {
       </Group>
 
       <Group gap="xs">
-        <Button
-          variant="filled"
-          color="slate.9"
-          size="xs"
-          // TODO: Implement download functionality
-          leftSection={<DownloadIcon size={13} />}
-        >
-          Download
-        </Button>
+        <DownloadMenu transcriptId={transcriptId as string} variant="button" />
 
-        <Button
+        {/* <Button
           variant="default"
           size="xs"
           leftSection={<SparklesIcon size={13} />}
@@ -68,35 +57,7 @@ export default function ActionBar({ fileName }: ActionBarProps) {
           }}
         >
           Summarize with AI
-        </Button>
-
-        <Button
-          variant="default"
-          size="xs"
-          leftSection={<ShareIcon size={13} />}
-          c="slate.7"
-          styles={{
-            root: {
-              borderColor: "var(--mantine-color-slate-2)",
-            },
-          }}
-        >
-          Share
-        </Button>
-
-        <Button
-          variant="default"
-          size="xs"
-          leftSection={<MessageSquareIcon size={13} />}
-          c="slate.7"
-          styles={{
-            root: {
-              borderColor: "var(--mantine-color-slate-2)",
-            },
-          }}
-        >
-          Comments (3)
-        </Button>
+        </Button> */}
       </Group>
     </Group>
   );

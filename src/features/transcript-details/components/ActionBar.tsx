@@ -3,12 +3,11 @@
 import { Anchor, Group, Text } from "@mantine/core";
 import Link from "next/link";
 import { ChevronRightIcon } from "lucide-react";
-import { ParamValue } from "next/dist/server/request/params";
 import { DownloadMenu } from "@/features/transcripts/components/DownloadMenu";
 
 interface ActionBarProps {
   fileName: string;
-  transcriptId: ParamValue;
+  transcriptId: string;
 }
 
 export default function ActionBar({ fileName, transcriptId }: ActionBarProps) {
@@ -43,7 +42,7 @@ export default function ActionBar({ fileName, transcriptId }: ActionBarProps) {
       </Group>
 
       <Group gap="xs">
-        <DownloadMenu transcriptId={transcriptId as string} variant="button" />
+        <DownloadMenu transcriptId={transcriptId} variant="button" />
 
         {/* <Button
           variant="default"

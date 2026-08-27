@@ -9,6 +9,7 @@ import { TranscriptDetails } from "@/features/transcript-details/types";
 import TranscriptSegment from "@/features/transcript-details/components/TranscriptSegment";
 import TranscriptMetadata from "@/features/transcript-details/components/TranscriptMetadata";
 import AIInsightsCard from "@/features/transcript-details/components/AIInsightsCard";
+import { useParams, useSearchParams } from "next/navigation";
 
 // TODO: Mock data for now, replace with actuals
 const TRANSCRIPT_DETAIL: TranscriptDetails = {
@@ -96,10 +97,16 @@ const TRANSCRIPT_DETAIL: TranscriptDetails = {
 
 export default function TranscriptDetailPage() {
   const transcript = TRANSCRIPT_DETAIL;
+  const params = useParams();
+  const searchParams = useSearchParams();
+
+  const transcriptId = params.transcriptId;
+  const fileName = searchParams.get("fileName");
 
   return (
     <Stack gap={0}>
-      <ActionBar fileName={transcript.fileName} />
+      <ActionBar fileName={fileName || ""} transcriptId={transcriptId} />
+
       <AudioControls src="/audio/kennedy44100_converted-test-1.wav" />
 
       <Box pt="xl">

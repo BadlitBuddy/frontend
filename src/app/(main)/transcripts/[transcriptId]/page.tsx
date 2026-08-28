@@ -100,14 +100,16 @@ export default function TranscriptDetailPage() {
   const params = useParams();
   const searchParams = useSearchParams();
 
-  const transcriptId = params.transcriptId;
+  const transcriptId = Array.isArray(params.transcriptId)
+    ? (params.transcriptId[0] ?? "")
+    : (params.transcriptId ?? "");
   const fileName = searchParams.get("fileName");
 
   return (
     <Stack gap={0}>
       <ActionBar fileName={fileName || ""} transcriptId={transcriptId} />
 
-      <AudioControls src="/audio/kennedy44100_converted-test-1.wav" />
+      <AudioControls transcriptId={transcriptId} fileName={fileName} />
 
       <Box pt="xl">
         <div className={classes.layout}>

@@ -14,6 +14,7 @@ export interface UseOPFSResult {
   listEntries: (path?: string) => Promise<OPFSEntry[]>;
   readFile: (path: string) => Promise<string>;
   readFileAsArrayBuffer: (path: string) => Promise<ArrayBuffer>;
+  readFileAsBlob: (path: string) => Promise<File>;
   writeFile: (
     path: string,
     data: string | Blob | BufferSource,
@@ -132,11 +133,25 @@ export function useOPFS(): UseOPFSResult {
     [getRoot],
   );
 
+  const readFileAsBlob = useCallback(
+    async (path: string): Promise<File> => {
+      const root = await getRoot();
+      const segments = splitPath(path);
+
+      const fileName = segments.pop();
+      if (!fileName) throw new Error("Invalid file path.");
+
+      const dir = await resolveDirectory(root, segments, false);
+      const fileHandle = await dir.getFileHandle(fileName);
+      return fileHandle.getFile();
+    },
+    [getRoot],
+  );
+
   const writeFile = useCallback(
     async (path: string, data: string | Blob | BufferSource): Promise<void> => {
       const root = await getRoot();
       const segments = splitPath(path);
-      console.log("Writing file to OPFS:", path, data);
 
       const fileName = segments.pop();
       if (!fileName) throw new Error("Invalid file path.");
@@ -216,6 +231,7 @@ export function useOPFS(): UseOPFSResult {
     listEntries,
     readFile,
     readFileAsArrayBuffer,
+    readFileAsBlob,
     writeFile,
     deleteFile,
     createDirectory,

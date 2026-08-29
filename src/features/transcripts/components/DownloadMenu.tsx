@@ -1,5 +1,5 @@
 import { useTranscriptionDownload } from "@/features/transcripts/hooks/useTranscriptionDownload";
-import { Box, Loader, Menu } from "@mantine/core";
+import { Button, Flex, Loader, Menu } from "@mantine/core";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   CaptionsIcon,
@@ -10,29 +10,59 @@ import {
 
 type DownloadMenuProps = {
   transcriptId: string;
+  variant?: "button" | "icon";
 };
-export function DownloadMenu({ transcriptId }: DownloadMenuProps) {
-  const queryClient = useQueryClient();
 
+export function DownloadMenu({
+  transcriptId,
+  variant = "icon",
+}: DownloadMenuProps) {
+  const queryClient = useQueryClient();
   const { handleDownload, downloading } = useTranscriptionDownload({
     transcriptId,
     queryClient,
   });
-
   const isLoading = (format: string) => downloading === format;
+
+  const icon = downloading ? (
+    <Loader size={16} color="slate.5" />
+  ) : (
+    <DownloadIcon size={16} />
+  );
+
+  const renderTarget = () => {
+    switch (variant) {
+      case "icon":
+        return (
+          <Flex align="center" gap={4} style={{ cursor: "pointer" }}>
+            {icon}
+          </Flex>
+        );
+      case "button":
+        return (
+          <Button
+            variant="filled"
+            size="xs"
+            leftSection={!downloading && <DownloadIcon size={13} />}
+            loading={!!downloading}
+            loaderProps={{ type: "dots" }}
+            color="slate.9"
+          >
+            Download
+          </Button>
+        );
+      default:
+        return (
+          <Flex align="center" gap={4} style={{ cursor: "pointer" }}>
+            {icon}
+          </Flex>
+        );
+    }
+  };
 
   return (
     <Menu shadow="md" width={150}>
-      <Menu.Target>
-        <Box component="span" style={{ display: "inline-flex" }}>
-          {downloading ? (
-            <Loader size={16} color="slate.5" />
-          ) : (
-            <DownloadIcon size={16} />
-          )}
-        </Box>
-      </Menu.Target>
-
+      <Menu.Target>{renderTarget()}</Menu.Target>
       <Menu.Dropdown>
         <Menu.Label>Export Formats</Menu.Label>
 

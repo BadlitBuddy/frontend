@@ -29,6 +29,10 @@ export default function TranscriptDetailPage() {
     return <div>Loading ....</div>;
   }
 
+  const duration = data?.metaData?.duration ?? "00:00:00";
+  const wordCount = data?.metaData?.wordCount ?? 0;
+  const language = data?.metaData?.language ?? "Unknown";
+
   return (
     <Stack gap={0}>
       <ActionBar fileName={fileName || ""} transcriptId={transcriptId} />
@@ -45,9 +49,10 @@ export default function TranscriptDetailPage() {
 
           <Stack gap="md">
             <TranscriptMetadata
-              fileType={"some type"}
-              uploadedBy={"some user"}
-              permissions={"some permissions"}
+              fileName={fileName || "unknown"}
+              duration={duration}
+              wordCount={wordCount}
+              language={language}
             />
             <AIInsightsCard />
           </Stack>

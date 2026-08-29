@@ -4,15 +4,19 @@ import { ActionIcon, Text } from "@mantine/core";
 import classes from "../styles/TranscriptDetail.module.css";
 import { InfoIcon } from "lucide-react";
 
+type TranscriptMetadataProps = {
+  fileName: string;
+  duration: string;
+  wordCount: number;
+  language: string;
+};
+
 export default function TranscriptMetadata({
-  fileType,
-  uploadedBy,
-  permissions,
-}: {
-  fileType: string;
-  uploadedBy: string;
-  permissions: string;
-}) {
+  fileName,
+  duration,
+  wordCount,
+  language,
+}: TranscriptMetadataProps) {
   return (
     <div className={classes.sidebarCard}>
       <div className={classes.sidebarCardHeader}>
@@ -30,9 +34,10 @@ export default function TranscriptMetadata({
         </ActionIcon>
       </div>
       <div className={classes.sidebarCardBody}>
-        <MetadataRow label="File Type" value={fileType} />
-        <MetadataRow label="Uploaded By" value={uploadedBy} />
-        <MetadataRow label="Permissions" value={permissions} />
+        <MetadataRow label="File Name" value={fileName} />
+        <MetadataRow label="Duration" value={duration.slice(0, 8)} />
+        <MetadataRow label="Word Count" value={wordCount.toString()} />
+        <MetadataRow label="Language" value={language} />
       </div>
     </div>
   );

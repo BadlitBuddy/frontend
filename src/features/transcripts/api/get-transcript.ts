@@ -12,6 +12,11 @@ import {
 export type GetTranscriptResponse = {
   transcript: TranscriptDto;
   jsonData: TranscriptionResult;
+  metaData: {
+    wordCount: number;
+    duration: string;
+    language: string;
+  };
   srtSegments: SrtSegment[] | null;
   vttSegments: VttSegment[] | null;
 };

@@ -129,3 +129,18 @@ export interface TranscriptionToken {
   DtwTimestamp?: number | null;
   VoiceLength?: number | null;
 }
+
+export interface SrtSegment {
+  index: number;
+  startTime: string;
+  endTime: string;
+  text: string;
+}
+
+export interface VttSegment {
+  index: number;
+  startTime: string;
+  endTime: string;
+  text: string;
+  voice: string;
+}

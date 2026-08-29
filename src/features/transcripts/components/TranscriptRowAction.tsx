@@ -22,7 +22,7 @@ export function RowAction({ transcriptId, fileName, status }: RowActionProps) {
     <Group gap={8} justify="flex-end">
       <Anchor
         component={Link}
-        href={`/transcripts/${encodeURIComponent(transcriptId)}`}
+        href={`/transcripts/${encodeURIComponent(transcriptId)}?fileName=${encodeURIComponent(fileName)}`}
         size="xs"
         fw={700}
         underline="hover"

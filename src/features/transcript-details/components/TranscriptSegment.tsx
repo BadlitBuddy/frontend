@@ -1,38 +1,35 @@
 "use client";
 
 import { Group, Text } from "@mantine/core";
-import { TranscriptSegment as TranscriptSegmentType } from "../types";
 import classes from "../styles/TranscriptDetail.module.css";
+import { VttSegment } from "@/features/transcripts/types";
 
-export default function TranscriptSegment({
-  segment,
-}: {
-  segment: TranscriptSegmentType;
-}) {
+type TranscriptSegmentProps = {
+  segment: VttSegment;
+};
+
+export default function TranscriptSegment({ segment }: TranscriptSegmentProps) {
   return (
-    <div
-      className={`${classes.segment} ${segment.active ? classes.segmentActive : ""}`}
-    >
+    <div className={`${classes.segment} ${false ? classes.segmentActive : ""}`}>
       <Group gap={8} mb={6}>
         <Text fz="0.78rem" fw={700} c="slate.9" ff="monospace">
-          {segment.time}
+          {segment.startTime} - {segment.endTime}
         </Text>
         <Text fz="0.82rem" fw={700} c="slate.8">
-          {segment.speaker}:
+          {segment.voice}:
         </Text>
       </Group>
-      <SegmentText text={segment.text} highlight={segment.highlight} />
+      <SegmentText text={segment.text} />
     </div>
   );
 }
 
-function SegmentText({
-  text,
-  highlight,
-}: {
+type SegmentTextProps = {
   text: string;
   highlight?: { start: number; end: number };
-}) {
+};
+
+function SegmentText({ text, highlight }: SegmentTextProps) {
   if (!highlight) {
     return (
       <Text size="sm" c="slate.7" lh={1.7}>

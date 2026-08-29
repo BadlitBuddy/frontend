@@ -54,7 +54,8 @@ export default function TranscriptDetailPage() {
               wordCount={wordCount}
               language={language}
             />
-            <AIInsightsCard />
+            {/* TODO: Implement AI Insights card */}
+            {/* <AIInsightsCard /> */}
           </Stack>
         </div>
       </Box>

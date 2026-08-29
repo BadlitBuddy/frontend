@@ -1,11 +1,10 @@
 "use client";
 
-import { Box, Stack } from "@mantine/core";
+import { Box, Skeleton, Stack } from "@mantine/core";
 import classes from "@/features/transcript-details/styles/TranscriptDetail.module.css";
 import ActionBar from "@/features/transcript-details/components/ActionBar";
 import { AudioControls } from "@/features/transcript-details/components/AudioControls";
 import TranscriptMetadata from "@/features/transcript-details/components/TranscriptMetadata";
-import AIInsightsCard from "@/features/transcript-details/components/AIInsightsCard";
 import { useParams, useSearchParams } from "next/navigation";
 import { TranscriptContent } from "@/features/transcript-details/components/TranscriptContent";
 import { useGetTranscript } from "@/features/transcripts/api/get-transcript";
@@ -25,10 +24,6 @@ export default function TranscriptDetailPage() {
     includeVttSegments: true,
   });
 
-  if (isLoading) {
-    return <div>Loading ....</div>;
-  }
-
   const duration = data?.metaData?.duration ?? "00:00:00";
   const wordCount = data?.metaData?.wordCount ?? 0;
   const language = data?.metaData?.language ?? "Unknown";
@@ -41,22 +36,36 @@ export default function TranscriptDetailPage() {
 
       <Box pt="xl">
         <div className={classes.layout}>
-          {data?.vttSegments ? (
-            <TranscriptContent vttSegments={data.vttSegments} />
+          {isLoading ? (
+            <Stack gap={15}>
+              {Array.from({ length: 15 }).map((_, index) => (
+                <Skeleton key={index} mih={125} radius="xl" />
+              ))}
+            </Stack>
           ) : (
-            <div>No transcript data available.</div>
+            <>
+              {data?.vttSegments ? (
+                <TranscriptContent vttSegments={data.vttSegments} />
+              ) : (
+                <div>No transcript data available.</div>
+              )}
+            </>
           )}
 
-          <Stack gap="md">
-            <TranscriptMetadata
-              fileName={fileName || "unknown"}
-              duration={duration}
-              wordCount={wordCount}
-              language={language}
-            />
-            {/* TODO: Implement AI Insights card */}
-            {/* <AIInsightsCard /> */}
-          </Stack>
+          {isLoading ? (
+            <Skeleton mih={350} radius="xl" />
+          ) : (
+            <Stack gap="md">
+              <TranscriptMetadata
+                fileName={fileName || "unknown"}
+                duration={duration}
+                wordCount={wordCount}
+                language={language}
+              />
+              {/* TODO: Implement AI Insights card */}
+              {/* <AIInsightsCard /> */}
+            </Stack>
+          )}
         </div>
       </Box>
     </Stack>

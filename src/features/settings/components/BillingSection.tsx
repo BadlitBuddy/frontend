@@ -11,12 +11,32 @@ import {
   Title,
 } from "@mantine/core";
 
-const MONTHLY_USED = 43;
-const MONTHLY_LIMIT = 300;
-const RESET_DATE = "Nov 1, 2024";
+type BillingSectionProps = {
+  plan: string;
+  monthlyUsed: number;
+  monthlyLimit: number;
+  resetDate: string;
+};
 
-export function BillingSection() {
-  const usagePercent = Math.round((MONTHLY_USED / MONTHLY_LIMIT) * 100);
+export function BillingSection({
+  plan,
+  monthlyUsed,
+  monthlyLimit,
+  resetDate,
+}: BillingSectionProps) {
+  const usagePercent = Math.round((monthlyUsed / monthlyLimit) * 100);
+
+  const formatDate = (isoString: string) => {
+    if (!isoString) return "";
+    return new Date(isoString).toLocaleString("en-US", {
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    });
+  };
 
   return (
     <Stack gap="xs">
@@ -32,7 +52,7 @@ export function BillingSection() {
                 Current plan
               </Text>
               <Title order={3} fz="1.5rem" fw={700} c="slate.9">
-                Free
+                {plan}
               </Title>
             </Box>
             {/* <Button
@@ -61,7 +81,7 @@ export function BillingSection() {
                 Monthly Usage
               </Text>
               <Text size="sm" c="slate.5">
-                {MONTHLY_USED} / {MONTHLY_LIMIT} min
+                {monthlyUsed} / {monthlyLimit} min
               </Text>
             </Group>
             <Progress
@@ -72,7 +92,7 @@ export function BillingSection() {
               bg="slate.2"
             />
             <Text size="xs" c="slate.4">
-              Resets on {RESET_DATE}
+              Resets on {formatDate(resetDate)}
             </Text>
           </Stack>
 

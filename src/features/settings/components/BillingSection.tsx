@@ -1,9 +1,7 @@
 "use client";
 
 import {
-  Anchor,
   Box,
-  Button,
   Divider,
   Group,
   Paper,
@@ -37,7 +35,7 @@ export function BillingSection() {
                 Free
               </Title>
             </Box>
-            <Button
+            {/* <Button
               size="sm"
               bg="slate.9"
               c="white"
@@ -52,7 +50,7 @@ export function BillingSection() {
               }}
             >
               Upgrade to Pro
-            </Button>
+            </Button> */}
           </Group>
 
           <Divider color="slate.1" />
@@ -78,9 +76,9 @@ export function BillingSection() {
             </Text>
           </Stack>
 
-          <Divider color="slate.1" />
+          {/* <Divider color="slate.1" /> */}
 
-          <Group gap="md">
+          {/* <Group gap="md">
             <Anchor
               size="sm"
               c="slate.6"
@@ -99,7 +97,7 @@ export function BillingSection() {
             >
               View invoices
             </Anchor>
-          </Group>
+          </Group> */}
         </Stack>
       </Paper>
     </Stack>

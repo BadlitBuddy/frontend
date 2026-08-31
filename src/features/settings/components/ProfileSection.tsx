@@ -2,7 +2,12 @@
 
 import { Grid, Paper, Stack, Text, TextInput } from "@mantine/core";
 
-export function ProfileSection() {
+type ProfileSectionProps = {
+  name: string;
+  email: string;
+};
+
+export function ProfileSection({ name, email }: ProfileSectionProps) {
   return (
     <Stack gap="xs">
       <Text size="xs" fw={700} c="slate.4" lts="0.1em" tt="uppercase">
@@ -14,7 +19,8 @@ export function ProfileSection() {
             <Grid.Col span={{ base: 12, sm: 6 }}>
               <TextInput
                 label="Name"
-                defaultValue="Kenneth Joshua"
+                defaultValue={name}
+                readOnly
                 size="sm"
                 c="slate.7"
                 mb="4"
@@ -23,7 +29,8 @@ export function ProfileSection() {
             <Grid.Col span={{ base: 12, sm: 6 }}>
               <TextInput
                 label="Email"
-                defaultValue="kenneth@example.com"
+                defaultValue={email}
+                readOnly
                 size="sm"
                 c="slate.7"
                 mb="4"

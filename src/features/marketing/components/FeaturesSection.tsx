@@ -19,22 +19,22 @@ export default function FeaturesSection() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* 99% Accuracy Card */}
           <div className="card card-border bg-ws-surface md:col-span-2 hover:shadow-md transition-shadow">
             <div className="card-body space-y-4">
               <span className="w-10 h-10 rounded-full bg-ws-background border border-ws-border flex items-center justify-center text-ws-text-primary">
                 <BadgeCheckIcon />
               </span>
-              <h3 className="card-title text-ws-text-primary">99% Accuracy</h3>
+              <h3 className="card-title text-ws-text-primary">
+                Industry-Leading Accuracy
+              </h3>
               <p className="text-sm text-ws-text-muted leading-relaxed max-w-lg">
-                Built on advanced neural models trained on millions of hours of
-                diverse speech patterns to ensure near-perfect results every
-                time.
+                Powered by state-of-the-art Whisper models to capture every
+                nuance, handling thick accents, background noise, and complex
+                terminology with exceptional precision.
               </p>
             </div>
           </div>
 
-          {/* 99 Languages Card */}
           <div className="card card-border bg-ws-surface hover:shadow-md transition-shadow">
             <div className="card-body space-y-4">
               <span className="w-10 h-10 rounded-full bg-ws-background border border-ws-border flex items-center justify-center text-ws-text-primary">
@@ -48,7 +48,6 @@ export default function FeaturesSection() {
             </div>
           </div>
 
-          {/* Instant Processing Card */}
           <div className="card card-border bg-ws-surface hover:shadow-md transition-shadow">
             <div className="card-body space-y-4">
               <span className="w-10 h-10 rounded-full bg-ws-background border border-ws-border flex items-center justify-center text-ws-text-primary">
@@ -64,7 +63,6 @@ export default function FeaturesSection() {
             </div>
           </div>
 
-          {/* Zero-Trace Privacy Card */}
           <div className="card bg-ws-primary md:col-span-2 overflow-hidden relative group">
             <div className="card-body flex-row items-center justify-between gap-6">
               <div className="space-y-4 max-w-md z-10">
@@ -73,11 +71,10 @@ export default function FeaturesSection() {
                 </h3>
                 <p className="text-sm text-ws-surface/60 leading-relaxed">
                   {
-                    "We don't store your data. Once your transcription is complete and downloaded, your audio files are immediately purged from our servers."
+                    "Zero server retention. Audio files are deleted immediately after transcription, while local in-browser storage lets you preview and edit without compromising privacy."
                   }
                 </p>
               </div>
-              {/* Floating Shield Graphic */}
               <div className="opacity-20 group-hover:opacity-30 transition-opacity absolute right-8 top-1/2 -translate-y-1/2 md:relative md:top-auto md:translate-y-0 shrink-0 md:opacity-30">
                 <HatGlassesIcon size={100} className="text-ws-surface/60" />
               </div>

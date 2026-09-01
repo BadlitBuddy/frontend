@@ -11,8 +11,7 @@ export default function HeroSection() {
           </h1>
           <p className="text-base text-base-content/80 leading-relaxed">
             Professional-grade AI transcription for your audio and video files.
-            Fast, accurate, and secure. Built for high-volume workflows and
-            precision editing.
+            Fast, accurate, and secure.
           </p>
           <div className="pt-4">
             <UploadZone />

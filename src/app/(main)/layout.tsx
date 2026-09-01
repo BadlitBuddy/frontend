@@ -26,8 +26,9 @@ import {
 import Image from "next/image";
 import classes from "./layout.module.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ProtectedRoute, useUser, useLogout } from "@/lib/auth";
+import { ProtectedRoute, useLogout } from "@/lib/auth";
 import { Notifications } from "@/components/notifications/notifications";
+import { useGetUser } from "@/hooks/useGetUser";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -102,7 +103,7 @@ function NavItem({
 
 function InnerAppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const { data: user } = useUser();
+  const { data: user } = useGetUser();
   const logoutMutation = useLogout();
 
   const userInitials = user

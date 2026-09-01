@@ -1,28 +1,15 @@
 "use client";
 
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter, usePathname } from "next/navigation";
 import { useEffect } from "react";
 
 import { paths } from "@/config/paths";
 import { api } from "./api-client";
-import { User } from "@/types/api";
-
-const getUser = async (): Promise<User> => {
-  return await api.get("/users/me");
-};
+import { useGetUser } from "@/hooks/useGetUser";
 
 const logout = (): Promise<void> => {
   return api.post("/users/logout");
-};
-
-export const useUser = () => {
-  return useQuery<User, Error>({
-    queryKey: ["auth-user"],
-    queryFn: getUser,
-    retry: false,
-    staleTime: 1000 * 60 * 5,
-  });
 };
 
 export const useLogout = () => {
@@ -47,7 +34,7 @@ export const AuthLoader = () => {
 };
 
 export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const { data: user, isLoading } = useUser();
+  const { data: user, isLoading } = useGetUser();
   const router = useRouter();
   const pathname = usePathname();
 

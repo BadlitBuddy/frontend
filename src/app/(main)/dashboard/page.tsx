@@ -2,7 +2,6 @@
 
 import { Box, Stack, Text, Title } from "@mantine/core";
 import { WorkspaceUploader } from "@/features/dashboard/components/WorkspaceUploader";
-import { TranscriptionSettings } from "@/features/dashboard/components/TranscriptionSettings";
 import { RecentTranscriptions } from "@/features/dashboard/components/RecentTranscriptions";
 import classes from "./dashboard.module.css";
 import { MainPageContainer } from "../_components/MainPageContainer";
@@ -30,7 +29,7 @@ export default function DashboardPage() {
 
         <div className={classes.workspaceGrid}>
           <WorkspaceUploader />
-          <TranscriptionSettings />
+          {/* <TranscriptionSettings /> */}
         </div>
 
         <RecentTranscriptions />

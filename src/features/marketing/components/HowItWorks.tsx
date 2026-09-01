@@ -20,7 +20,7 @@ const steps = [
     icon: FileTextIcon,
     label: "Review & export",
     description:
-      "Use our interactive editor to polish your text and export to PDF, DOCX, or SRT in one click.",
+      "Use the transcript view to review your text and export to SRT, VTT, or TXT in one click.",
   },
 ];
 

@@ -3,7 +3,7 @@ import Link from "next/link";
 export default function CtaSection() {
   return (
     <section className="max-w-7xl mx-auto px-6">
-      <div className="card card-border max-w-4xl mx-auto shadow-sm hover:shadow-md transition-shadow">
+      <div className="card card-border max-w-4xl mx-auto shadow-sm hover:shadow-md transition-shadow bg-ws-surface ">
         <div className="card-body items-center text-center">
           <h2 className="card-title text-2xl md:text-3xl font-bold tracking-tight text-ws-text-primary mb-2">
             Ready to streamline your workflow?

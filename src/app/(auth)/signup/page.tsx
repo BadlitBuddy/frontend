@@ -64,16 +64,15 @@ export default function SignupPage() {
             className="text-sm text-base-content/70 cursor-pointer select-none"
           >
             I agree to the{" "}
-            {/* //TODO: Implement the terms and privacy policy pages */}
             <a
-              href="#"
+              href="/terms"
               className="font-semibold text-base-content hover:underline"
             >
               Terms of Service
             </a>{" "}
             and{" "}
             <a
-              href="#"
+              href="/privacy"
               className="font-semibold text-base-content hover:underline"
             >
               Privacy Policy

@@ -24,7 +24,6 @@ export default function Footer() {
             </span>
           </aside>
 
-          {/* // TODO: Implement footer links */}
           <nav className="flex flex-wrap justify-center gap-x-8 gap-y-2">
             <Link
               href="/privacy"
@@ -37,12 +36,6 @@ export default function Footer() {
               className="link link-hover text-xs text-base-content/70 hover:text-base-content transition-colors"
             >
               Terms of Service
-            </Link>
-            <Link
-              href="/contact"
-              className="link link-hover text-xs text-base-content/70 hover:text-base-content transition-colors"
-            >
-              Contact Us
             </Link>
           </nav>
         </div>

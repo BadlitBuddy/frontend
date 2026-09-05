@@ -64,16 +64,15 @@ export default function SignupPage() {
             className="text-sm text-base-content/70 cursor-pointer select-none"
           >
             I agree to the{" "}
-            {/* //TODO: Implement the terms and privacy policy pages */}
             <a
-              href="#"
+              href="/terms"
               className="font-semibold text-base-content hover:underline"
             >
               Terms of Service
             </a>{" "}
             and{" "}
             <a
-              href="#"
+              href="/privacy"
               className="font-semibold text-base-content hover:underline"
             >
               Privacy Policy
@@ -87,7 +86,7 @@ export default function SignupPage() {
       <ul className="space-y-3 w-full text-sm text-base-content/85">
         <li className="flex items-center gap-3">
           <CheckIcon size={16} className="text-base-content shrink-0" />
-          <span>1 hour and 30 minutes of free transcription per week</span>
+          <span>300 minutes of free transcription per month</span>
         </li>
         <li className="flex items-center gap-3">
           <CheckIcon size={16} className="text-base-content shrink-0" />

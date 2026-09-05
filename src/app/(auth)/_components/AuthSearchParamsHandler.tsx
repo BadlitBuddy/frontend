@@ -10,6 +10,7 @@ export default function AuthSearchParamsHandler() {
 
   const error = searchParams.get("error");
   const errorDescription = searchParams.get("error_description");
+  const isSignUpSuccess = searchParams.get("signUpSuccess");
 
   useEffect(() => {
     if (error) {
@@ -21,6 +22,17 @@ export default function AuthSearchParamsHandler() {
       });
     }
   }, [error, errorDescription, addNotification]);
+
+  useEffect(() => {
+    if (isSignUpSuccess === "true") {
+      addNotification({
+        type: "success",
+        title: "Signup successful",
+        message: "You have successfully signed up.",
+        duration: 4500,
+      });
+    }
+  }, [isSignUpSuccess, addNotification]);
 
   return null;
 }

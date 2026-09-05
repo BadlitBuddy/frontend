@@ -2,33 +2,33 @@ const faqs = [
   {
     question: "How accurate is the transcription?",
     answer:
-      "Our system delivers near-human transcription accuracy. Powered by Whisper—the gold standard in speech recognition—it effortlessly processes complex vocabulary, diverse accents, and overlapping conversations. Whether it's a crisp studio podcast or a noisy Zoom call, you can expect highly precise transcripts every time.",
+      "Our system delivers near-human transcription accuracy. Powered by Whisper a highly powerful model in speech recognition, it effortlessly processes complex vocabulary, diverse accents, and overlapping conversations. Whether it's a crisp studio podcast or a noisy Zoom call, you can expect highly precise transcripts every time.",
     defaultOpen: true,
   },
   {
     question: "What file formats do you support?",
     answer:
-      "We support all major audio and video formats including MP3, MP4, WAV, M4A, AAC, MOV, and AVI.",
+      "We support all major audio and video formats including but not limited to MP3, MP4, WAV, M4A, AAC, MOV, and AVI.",
   },
   {
     question: "Can I export to subtitles (SRT)?",
     answer:
-      "Yes, you can export your transcriptions to standard subtitle formats like SRT and VTT, as well as rich text documents (DOCX, PDF) and plain text (TXT).",
+      "Yes, you can export your transcriptions to standard subtitle formats like SRT, VTT, and plain text TXT.",
   },
   {
     question: "Is my data safe?",
     answer:
       "All uploads are ephemeral, meaning once your transcription is complete and downloaded, your audio files are immediately purged from our servers.",
   },
-  {
-    question: "Is there a free plan?",
-    answer:
-      "Yes, we offer a Free plan with 15 minutes of transcription per device, and up to 1 hour 30 minutes of total credits when you sign up for a free account.",
-  },
+  // {
+  //   question: "Is there a free plan?",
+  //   answer:
+  //     "Yes, we offer a Free plan with 15 minutes of transcription per device, and up to 1 hour 30 minutes of total credits when you sign up for a free account.",
+  // },
   {
     question: "What languages do you support?",
     answer:
-      "Our AI engine supports transcription and translation for over 99 languages, including English, Spanish, French, German, Japanese, Mandarin, and Arabic.",
+      "Our Transcription Model supports transcription for over 99 languages, including English, Spanish, French, German, Japanese, Mandarin, and Arabic.",
   },
 ];
 

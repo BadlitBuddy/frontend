@@ -38,14 +38,14 @@ export default function Header() {
                 Features
               </a>
             </li>
-            <li>
+            {/* <li>
               <a
                 href="#pricing"
                 className="text-sm font-medium text-base-content/85 hover:text-base-content"
               >
                 Pricing
               </a>
-            </li>
+            </li> */}
             <li>
               <a
                 href="#faq"

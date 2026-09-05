@@ -13,11 +13,11 @@ export default function Footer() {
             >
               <Image
                 src="/logo/pulse-svgrepo-com.svg"
-                alt="WordScribe Logo"
+                alt="Badlit Buddy Logo"
                 width={32}
                 height={32}
               />
-              <span>WordScribe</span>
+              <span>Badlit Buddy</span>
             </Link>
             <span className="text-[10px] tracking-wider font-semibold text-base-content/60 mt-1">
               AI POWERED TRANSCRIPTION
@@ -42,7 +42,7 @@ export default function Footer() {
 
         <div className="pt-8 text-center">
           <p className="text-xs text-base-content/60">
-            © {new Date().getFullYear()} WordScribe. All rights reserved.
+            © {new Date().getFullYear()} Badlit Buddy. All rights reserved.
           </p>
         </div>
       </div>

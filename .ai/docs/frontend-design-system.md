@@ -118,7 +118,7 @@ The authenticated application is built using **Mantine UI**.
 - Prefer Mantine components over custom implementations.
 - Customize appearance through the shared Mantine theme.
 - Extend existing components instead of recreating them.
-- Refer to [Mantine v9 Skill](file:///d:/Projects%20D/wordscribe-frontend/.ai/skills/mantinev9/SKILL.md) for detailed components, configuration, and theming rules.
+- Refer to [Mantine v9 Skill](file:///d:/Projects%20D/badlitbuddy/frontend/.ai/skills/mantinev9/SKILL.md) for detailed components, configuration, and theming rules.
 
 ### Marketing Pages
 
@@ -126,7 +126,7 @@ Public-facing pages are built using **DaisyUI**.
 
 These pages may be more expressive in layout and typography while remaining consistent with the overall minimalist aesthetic and shared color palette.
 
-- Refer to [DaisyUI Skill](file:///d:/Projects%20D/wordscribe-frontend/.ai/skills/daisyui/SKILL.md) for classes, colors, and layout rules.
+- Refer to [DaisyUI Skill](file:///d:/Projects%20D/badlitbuddy/frontend/.ai/skills/daisyui/SKILL.md) for classes, colors, and layout rules.
 
 ---
 

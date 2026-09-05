@@ -16,7 +16,7 @@ import {
   Text,
   UnstyledButton,
 } from "@mantine/core";
-import { wordscribeTheme } from "./mantine-theme";
+import { badlitBuddyTheme } from "./mantine-theme";
 import {
   LayoutDashboardIcon,
   FileTextIcon,
@@ -118,7 +118,7 @@ function InnerAppLayout({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <MantineProvider theme={wordscribeTheme} defaultColorScheme="light">
+    <MantineProvider theme={badlitBuddyTheme} defaultColorScheme="light">
       <AppShell navbar={{ width: 240, breakpoint: "md" }} padding="xl">
         <AppShell.Navbar>
           <AppShell.Section p="md">
@@ -142,7 +142,7 @@ function InnerAppLayout({ children }: { children: React.ReactNode }) {
               >
                 <Image
                   src="/logo/pulse-svgrepo-com.svg"
-                  alt="WordScribe Logo"
+                  alt="Badlit Buddy Logo"
                   width={32}
                   height={32}
                 />
@@ -152,7 +152,7 @@ function InnerAppLayout({ children }: { children: React.ReactNode }) {
                 size="md"
                 style={{ color: "var(--mantine-color-slate-9)" }}
               >
-                WordScribe
+                Badlit Buddy
               </Text>
             </Anchor>
           </AppShell.Section>

@@ -4,7 +4,7 @@ import {
   MantineColorsTuple,
 } from "@mantine/core";
 
-export const wordscribeTheme = createTheme({
+export const badlitBuddyTheme = createTheme({
   primaryColor: "slate",
   primaryShade: { light: 9, dark: 0 },
   fontFamily:

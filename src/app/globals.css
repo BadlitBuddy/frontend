@@ -2,12 +2,12 @@
 
 /* ─────────────────────────────────────────────
    DaisyUI plugin — built-in themes are kept
-   available alongside the custom wordscribe theme.
-   wordscribe is the default (light) theme.
+   available alongside the custom badlitbuddy theme.
+   badlitbuddy is the default (light) theme.
 ───────────────────────────────────────────── */
 @plugin "daisyui" {
   themes:
-    wordscribe --default,
+    badlitbuddy --default,
     light --default,
     dark,
     cupcake,
@@ -47,10 +47,10 @@
 }
 
 /* ─────────────────────────────────────────────
-   WordScribe custom DaisyUI theme
+   Badlit Buddy custom DaisyUI theme
 ───────────────────────────────────────────── */
 @plugin "daisyui/theme" {
-  name: "wordscribe";
+  name: "badlitbuddy";
   default: true;
   prefersdark: false;
   color-scheme: light;
@@ -137,7 +137,7 @@ body {
 }
 
 /* ─────────────────────────────────────────────
-   Custom micro-animations for WordScribe
+   Custom micro-animations for Badlit Buddy
 ───────────────────────────────────────────── */
 @keyframes indeterminate-bar {
   0% {

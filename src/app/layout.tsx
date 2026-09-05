@@ -13,9 +13,9 @@ const jetBrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "WordScribe",
+  title: "Badlit Buddy",
   description:
-    "WordScribe is an AI-powered transcription service that converts audio and video files into accurate text transcripts. It supports multiple languages and timestamps, making it ideal for meetings, interviews, podcasts, and more.",
+    "Badlit Buddy is an AI-powered transcription service that converts audio and video files into accurate text transcripts. It supports multiple languages and timestamps, making it ideal for meetings, interviews, podcasts, and more.",
 };
 
 export default function RootLayout({

@@ -21,7 +21,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 ---
 
-# WordScribe Frontend — Agent Rules
+# Badlit Buddy Frontend — Agent Rules
 
 This file contains project-specific instructions for AI coding agents (Antigravity, Cursor, Claude, and others). Follow all rules below before writing any code.
 
@@ -29,7 +29,7 @@ This file contains project-specific instructions for AI coding agents (Antigravi
 
 ## Project Overview
 
-WordScribe is a precision transcription web application split into two surfaces:
+Badlit Buddy is a precision transcription web application split into two surfaces:
 
 | Surface               | Framework                | Purpose                                       |
 | --------------------- | ------------------------ | --------------------------------------------- |
@@ -62,7 +62,7 @@ All project-specific docs and skills live in the `.ai/` directory at the project
     ├── nextjs-deployment/
     │   └── SKILL.md                ← Next.js production deployment patterns (standalone output, Docker, CI/CD, monitoring)
     └── project/
-        ├── SKILL.md                ← WordScribe frontend project patterns, architecture, and feature structure
+        ├── SKILL.md                ← Badlit Buddy frontend project patterns, architecture, and feature structure
         └── patterns/
             └── api-hooks/
                 └── SKILL.md        ← TanStack Query + axios + zod API hooks conventions

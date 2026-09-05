@@ -1,36 +1,150 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Badlit Buddy Frontend
 
-## Getting Started
+Frontend web application for Badlit Buddy.
 
-First, run the development server:
+Architecturally, the frontend is divided into two distinct surfaces:
+
+- **Authenticated App (`src/app/(main)`):** Mantine UI v9, grayscale-first design system, TanStack Query, and client-side audio/transcription processing.
+- **Public Marketing (`src/app/(marketing)`):** DaisyUI (Tailwind CSS 4) landing and product overview pages.
+
+---
+
+## 1. Project Overview & Ownership
+
+- **Service Context:** Frontend client consuming the Badlit Buddy Core Backend API (`NEXT_PUBLIC_API_URL`) and edge services (`NEXT_PUBLIC_EDGE_API_URL`). Supports client-side WebAssembly audio extraction via `@ffmpeg/ffmpeg`.
+
+---
+
+## 2. Prerequisites & System Requirements
+
+Ensure your local development environment meets the required toolchain versions before installing dependencies:
+
+- **Node.js:** `v24.x` (recommended, aligned with CI and deployment targets) or `>=20.9.0`
+- **Package Manager:** `pnpm@11.18.0` (strictly enforced via `packageManager` field; do not use `npm` or `yarn`)
+- **Browser Requirements:** Modern Chromium, Firefox, or Safari supporting `SharedArrayBuffer` and WebAssembly (required for `@ffmpeg/ffmpeg`). Note that Next.js dev headers include `Cross-Origin-Opener-Policy: same-origin` and `Cross-Origin-Embedder-Policy: require-corp` to enable WASM threading.
+
+---
+
+## 3. Environment Variables (`.env`)
+
+Configuration is validated using Next.js typed environment variables. To configure your local environment:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+cp .env.example .env.local
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Environment Variable Reference
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Variable                   | Required | Default / Example            | Purpose                                                            |
+| :------------------------- | :------- | :--------------------------- | :----------------------------------------------------------------- |
+| `NEXT_PUBLIC_API_URL`      | Yes      | `https://localhost:7168/api` | Base URL for the core REST API (auth, user profiles, transcripts). |
+| `NEXT_PUBLIC_EDGE_API_URL` | No       | `http://localhost:50000`     | edge service endpoint.                                             |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## 4. Getting Started / Local Development
 
-To learn more about Next.js, take a look at the following resources:
+1. **Install dependencies:**
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+   ```bash
+   pnpm install --frozen-lockfile
+   ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+2. **Configure environment:**
+   Verify `.env.local` contains valid backend API URLs.
 
-## Deploy on Vercel
+3. **Start the development server:**
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+   ```bash
+   pnpm dev
+   ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+4. **Access the application:**
+   - Marketing Landing: [http://localhost:3000](http://localhost:3000)
+   - Login: [http://localhost:3000/login](http://localhost:3000/login)
+   - App Dashboard: [http://localhost:3000/dashboard](http://localhost:3000/dashboard)
+
+> **HTTPS Development:** If testing cross-origin cookies or secure context features requiring valid certificates, run:
+>
+> ```bash
+> pnpm dev-https
+> ```
+
+---
+
+## 5. Available Scripts
+
+The following commands are defined in `package.json`:
+
+| Script                | Command                         | Purpose                                                                |
+| :-------------------- | :------------------------------ | :--------------------------------------------------------------------- |
+| `pnpm dev`            | `next dev`                      | Starts local Next.js development server on port `3000`.                |
+| `pnpm dev-https`      | `next dev --experimental-https` | Starts local dev server using experimental HTTPS certificates.         |
+| `pnpm build`          | `next build`                    | Creates an optimized production build in `.next`.                      |
+| `pnpm start`          | `next start`                    | Runs the Next.js production server locally (requires prior build).     |
+| `pnpm lint`           | `eslint`                        | Executes ESLint across TypeScript and TSX source files.                |
+| `pnpm typecheck`      | `tsc --noEmit`                  | Validates TypeScript types across the project without emitting files.  |
+| `pnpm create-feature` | `tsx scripts/create-feature.ts` | Scaffolds a bulletproof-react feature directory and route boilerplate. |
+
+---
+
+## 6. Architecture & Directory Layout
+
+The codebase follows the **bulletproof-react** architecture pattern. Code is isolated by domain feature under `src/features/` rather than split strictly by file type.
+
+```text
+frontend/
+├── .ai/                    # Design system docs, agent skills, and workflow references
+├── .github/workflows/      # GitHub Actions CI and CD deployment workflows
+├── public/                 # Static assets (fonts, icons, media)
+├── scripts/                # Development CLI utilities (e.g., create-feature generator)
+└── src/
+    ├── app/                # Next.js App Router root
+    │   ├── (auth)/         # Unauthenticated routes (login, register)
+    │   ├── (main)/         # Authenticated app routes (dashboard, transcripts, settings)
+    │   └── (marketing)/    # Public landing and marketing routes
+    ├── components/         # Cross-feature UI primitives (notifications, layouts, shared modals)
+    ├── config/             # Canonical application paths, route constants, and app settings
+    ├── features/           # Domain feature modules (bulletproof-react structure)
+    │   ├── dashboard/      # User workspace overview and summary stats
+    │   ├── marketing/      # Landing page sections, hero, feature overview
+    │   ├── settings/       # User profile and account preferences
+    │   ├── transcript-details/ # Transcript editor, audio player, word-level editing
+    │   └── transcripts/    # Transcript list, upload workflow, and status tracking
+    ├── hooks/              # Global shared React hooks
+    ├── lib/                # Shared clients and core utilities (api-client, react-query)
+    ├── types/              # Global shared TypeScript definitions and entity models
+    └── utils/              # Generic utility functions
+```
+
+### Feature Module Structure
+
+Each directory inside `src/features/{feature}/` maintains a strict public API boundary:
+
+```text
+src/features/{feature}/
+├── api/          # TanStack Query query/mutation hooks & Axios requests
+├── components/   # UI components specific to this feature
+├── hooks/        # React hooks scoped strictly to this feature
+├── types/        # Feature-specific DTOs and interfaces
+├── utils/        # Feature helper functions
+```
+
+- **Surface Separation:** Use Mantine UI components inside `(main)` features; use DaisyUI/Tailwind 4 inside `(marketing)`.
+
+---
+
+## 8. Deployment & CI/CD Workflow
+
+Deployment and continuous integration are managed through GitHub Actions:
+
+- **CI Pipeline (`.github/workflows/ci.yml`):**
+  - Runs on all pull requests and pushes to `main` and `dev`.
+  - Executes three parallel/dependent verification stages:
+    1. `lint`: ESLint verification (`pnpm run lint`).
+    2. `typecheck`: TypeScript type check (`pnpm exec tsc --noEmit`).
+    3. `build`: Next.js production compile with cache layer (`pnpm run build`).
+- **Deployment Pipeline (`.github/workflows/deploy-dev.yml`):**
+  - Automatic deployment triggered on merge or push to the `dev` branch.
+  - Uses the Vercel CLI to pull environment settings, generate production build artifacts, and deploy prebuilt releases.
+  - Can also be manually triggered via `workflow_dispatch`.

@@ -23,7 +23,7 @@ export default function AuthLayout({
   return (
     <QueryClientProvider client={queryClient}>
       <div
-        data-theme="wordscribe"
+        data-theme="badlitbuddy"
         className="min-h-screen flex flex-col bg-base-100 antialiased font-sans select-none"
       >
         <Notifications />

@@ -7,7 +7,7 @@ export default function MarketingLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div data-theme="wordscribe" className="flex flex-col antialiased">
+    <div data-theme="badlitbuddy" className="flex flex-col antialiased">
       <Header />
       <main className="grow">{children}</main>
       <Footer />

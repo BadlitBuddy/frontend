@@ -1,15 +1,15 @@
 ---
 name: project
-description: WordScribe frontend project patterns, architecture, and feature structure skill. Covers bulletproof-react feature directory layout, routing conventions, shared lib utilities, state management, and sub-pattern guides (like api-hooks). Trigger when creating or modifying features, routes, shared utilities, components, or feature architecture.
+description: Badlit Buddy frontend project patterns, architecture, and feature structure skill. Covers bulletproof-react feature directory layout, routing conventions, shared lib utilities, state management, and sub-pattern guides (like api-hooks). Trigger when creating or modifying features, routes, shared utilities, components, or feature architecture.
 ---
 
 # Project Architecture & Conventions
 
-This skill defines the canonical project structure and architectural patterns for the **WordScribe Frontend** Next.js application.
+This skill defines the canonical project structure and architectural patterns for the **Badlit Buddy Frontend** Next.js application.
 
 ## Overview
 
-WordScribe Frontend is structured following **bulletproof-react** principles: code is organized by **feature** rather than by file type. Shared infrastructure and global primitives support these features without leaking implementation details across feature boundaries.
+Badlit Buddy Frontend is structured following **bulletproof-react** principles: code is organized by **feature** rather than by file type. Shared infrastructure and global primitives support these features without leaking implementation details across feature boundaries.
 
 ## Directory Structure
 

@@ -12,11 +12,11 @@ export default function Header() {
           >
             <Image
               src="/logo/pulse-svgrepo-com.svg"
-              alt="WordScribe Logo"
+              alt="Badlit Buddy Logo"
               width={32}
               height={32}
             />
-            <span>WordScribe</span>
+            <span>Badlit Buddy</span>
           </Link>
         </div>
 
